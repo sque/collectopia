@@ -1,0 +1,32 @@
+
+Coding Guidelines
+-----------------------
+
+Current Revision: R2
+
+ 1. Comments must all have left asterisk
+ 	/**
+ 	 * Never omit left asterisk
+ 	 */
+ 
+ 2. Functions must be named based on these rules
+ 	- all lowercase
+ 	- words are seperated with _
+ 	e.g. $obj->check_this();
+ 	     simple_function();
+ 	     show();
+ 	
+ 3. Class names must be named based on these rules
+ 	- Camelized text like MyVeryGoodClass
+ 	- Class belonging to a package or "virtual" namespace,
+ 	    its name must be prependend with a trailing undescore.
+    e.g.    ClassLoader     (class ClassLoader that belongs to no package)
+            Auth_Storage    (class Storage of package Auth)
+            
+ 4. All classes must have their conformance revision in their brief description
+ 	e.g //! [R1] This is the best class
+
+ 5. Files that contain functions must have filename of the form package.lib.php
+
+ 6. Files that contain a class must have extension .class.php
+    e.g. Cache_Apc class maps to path Cache/Apc.class.php

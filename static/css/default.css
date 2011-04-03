@@ -1,0 +1,338 @@
+body {
+	font: 10pt Arial;
+	margin: 10px 50px;
+	color: #344534;
+}
+
+#map-canvas, div#wrapper{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	left: 0px;
+	bottom: 0px;
+	overflow: hidden;
+}
+
+
+/* Container */
+div#content {
+	z-index: 10;
+	position: relative;
+}
+
+
+.widget {	
+	padding: 15px;
+	background-color: #dedede;	
+	position: absolute;
+	-moz-border-radius: 0px 5px 5px 0px;
+	-moz-box-shadow: 0 0 10px #676767;
+	border: 1px solid #a3a3a3;	
+}
+
+.widget.search {
+	top: 150px;
+	z-index: 1000;
+}
+
+.buttons {
+	position: absolute;
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+	top: 250px;	
+}
+
+.buttons li {
+	background: #dedede url('images/btn_create.png') no-repeat 72px center;
+	padding: 9px 30px 9px 9px;
+	-moz-border-radius: 0px 5px 5px 0px;
+	border: 1px solid #a3a3a3;
+	-moz-box-shadow: 0 0 10px #676767;
+
+	font: 11pt Arial;
+	font-weight: bold;
+	color: #353535;
+	cursor: pointer;
+	
+	margin: 15px 0px;
+	width: 65px;
+	position: relative;
+	left: -65px; 
+}
+.buttons li.create {	background-image: url('images/btn_create.png');	}
+.buttons li.latest {	background-image: url('images/btn_latest.png');	}
+
+.buttons li.enabled {
+	left: 0px;
+}
+
+.panel {
+	padding: 11px;
+	background-color: #dedede;	
+	position: absolute;
+	left: 300px;
+	top: 250px;
+	-moz-border-radius: 25px;
+	-moz-box-shadow: 0 0 10px #676767;
+	width: 340px;
+}
+.panel > div{
+	background-color: white;
+	padding: 5px;
+	border: 2px solid #cccccc;	
+	font-size: 8pt;
+}
+.panel .close {
+	position: absolute;
+	right: -6px;
+	top: -9px;
+	display: block;
+	background-color: white;
+	border: 1px solid #cccccc;
+	height: 24px;
+	width: 35px;
+	text-align: center;
+	-moz-border-radius: 25px;
+	font-size: 7pt;
+	padding-top: 11px;
+	color: #767676;
+}
+
+.panel .close:hover {
+	border-color: #dd6666;
+	cursor: pointer;	
+}
+
+.panel .actions {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+	position: absolute;
+	right: 11px;
+	bottom: -7px;
+}
+
+.panel .title, .panel .actions li a{	
+	display: block;
+	height: 14px;
+	padding: 2px 15px;
+	background-color: white;
+	border: 2px solid #cccccc;
+	font-size: 9pt;
+}
+
+.panel .title {	
+	position: absolute;
+	display: block;
+	top: -7px;
+	left: 11px;
+	border-bottom: none;
+	cursor: pointer;
+}
+
+.panel .actions li {
+	display: inline-block;
+}
+.panel .actions li a{
+	border-top: none;
+	margin-left: 8px;	
+}
+
+.panel .actions li a{
+	text-decoration: none;
+	color: #767676;
+}
+
+.panel .actions li a:hover{
+	text-decoration: none;
+	color: black;
+}
+
+.panel .ui-form textarea {
+	resize: vertical;
+}
+
+/** CreatePanel **/
+.panel.place-new textarea,
+.panel.place-new input{
+	width: 98%;
+}
+
+.panel.place-new ul.categories{
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+.panel.place-new ul.categories li {
+	cursor: pointer;
+	/*border: 1px solid #979797;*/
+	display: inline-block;
+	padding: 3px 5px;
+	margin-right: 5px;
+	color: #454545;
+	width: 130px;
+	position: relative;
+	padding-left: 20px;
+	line-height: 12px;
+}
+
+.panel.place-new ul.categories li .checkbox{
+	width: 10px;
+	height: 10px;
+	display: block;
+	border: 2px solid red;
+	-moz-border-radius: 4px;
+	position: absolute;
+	left: 3px;
+	top: 1px;
+}
+
+.panel.place-new ul.categories li.enabled .checkbox{
+	background-color: red;
+}
+
+/** InfoPanel **/
+.panel.info {
+
+}
+	
+.panel.info ul.info{
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;	
+}
+
+.panel.info ul.info label{
+	font-weight: bold;
+}
+
+.panel.info .description{
+	padding: 2px;
+	font-size: 9pt;
+}
+
+.panel.info ul.categories{
+	margin: 0px; padding: 0px;
+	list-style-type: none;
+	position: absolute;
+	top: 15px;
+	right: 30px;
+}
+
+.panel.info ul.categories li{
+	display: inline-block;
+	margin-left: 5px;
+}
+
+/** search **/
+.widget.search ul.results {
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+	white-space: pre;
+}
+
+.widget.search input {
+	width: 96%;
+}
+
+.widget.search ul.results  li{
+	background-color: #f1f1f1;
+	margin: 1px auto;
+	padding: 2px 4px;
+	cursor: pointer;
+}
+
+/** rating **/
+.rating .textual {
+	vertical-align: super;
+}
+
+.rating .textual .score {
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
+.rating .textual .total {
+	margin-left: 5px;
+	font-style: italic;
+}
+
+ul.rating {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+	width: 105px;
+	display: inline-block;
+}	
+
+ul.rating li{
+	background: transparent url('images/stars.png') no-repeat left top;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
+ul.rating.current-1 li.rate-1,
+ul.rating.current-2 li.rate-1,
+ul.rating.current-2 li.rate-2,
+ul.rating.current-3 li.rate-1,
+ul.rating.current-3 li.rate-2,
+ul.rating.current-3 li.rate-3,
+ul.rating.current-4 li.rate-1,
+ul.rating.current-4 li.rate-2,
+ul.rating.current-4 li.rate-3,
+ul.rating.current-4 li.rate-4,
+ul.rating.current-5 li.rate-1,
+ul.rating.current-5 li.rate-2,
+ul.rating.current-5 li.rate-3,
+ul.rating.current-5 li.rate-4,
+ul.rating.current-5 li.rate-5 {
+	background-position: left -20px;
+}
+ul.rating li.hover {
+	background-position: left -60px !important;
+}
+
+ul.rating.selected.current-1 li.rate-1,
+ul.rating.selected.current-2 li.rate-1,
+ul.rating.selected.current-2 li.rate-2,
+ul.rating.selected.current-3 li.rate-1,
+ul.rating.selected.current-3 li.rate-2,
+ul.rating.selected.current-3 li.rate-3,
+ul.rating.selected.current-4 li.rate-1,
+ul.rating.selected.current-4 li.rate-2,
+ul.rating.selected.current-4 li.rate-3,
+ul.rating.selected.current-4 li.rate-4,
+ul.rating.selected.current-5 li.rate-1,
+ul.rating.selected.current-5 li.rate-2,
+ul.rating.selected.current-5 li.rate-3,
+ul.rating.selected.current-5 li.rate-4,
+ul.rating.selected.current-5 li.rate-5 {
+	background-position: left -40px;
+}
+ul.rating.selected li{
+	cursor: auto;
+}
+
+/** Form **/
+.ui-form ul.fields {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+.ui-form ul.fields li{
+	margin: 5px 0px;
+}
+
+.ui-form ul.fields label {
+	display: block;
+	font-weight: bold;
+}
+
+.ui-form .ui-form-error {
+	color: #dd0000;
+} 

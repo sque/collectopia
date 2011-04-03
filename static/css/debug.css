@@ -1,0 +1,157 @@
+body {
+	font-size: 11pt;
+	font-family: Arial;
+	margin: 10px 50px;
+}
+
+/* General classes */
+.error{
+    color: red;
+}
+
+/* Execption / Error title */
+div.exception, div.error {
+	font-size: 14pt;
+	font-weight: bold;
+}
+
+div.exception .type {
+	color: red;
+}
+
+div.exception .message {
+	display: block;
+	color: #545454;
+	font-style: italic;
+	margin-top: 5px;
+}
+
+div.exception .message:before,div.exception .message:after {
+	content: '"';
+}
+
+div.error span.code {
+	padding: 0px 4pt;
+	color: green;
+}
+
+div.error span.code:before {
+	content: '[';
+}
+
+div.error span.code:after {
+	content: ']';
+}
+
+div.error span.message {
+	color: red;
+}
+
+/* Backtrace */
+ul.backtrace {
+	list-style-type: decimal;
+	padding: 0px;
+}
+
+ul.backtrace>li {
+	margin-bottom: 5px;
+	border: 1px solid #ededed;
+	padding: 5px;
+	background-color: #efefef;
+}
+
+ul.backtrace>li:hover .code {
+	display: block;
+}
+
+ul.backtrace>li:hover {
+	border: 1px solid #78a395;
+	background-color: #def2de;
+}
+
+ul.backtrace>li .function {
+	display: block;
+	font-weight: bold;
+}
+
+ul.backtrace>li .file {
+	color: #3467d4;
+	font-weight: bold;
+}
+
+ul.backtrace>li span.line {
+	color: green;
+	font-weight: bold;
+	padding: 5px;
+}
+
+ul.backtrace>li span.line:before {
+	content: '(';
+}
+
+ul.backtrace>li .line:after {
+	content: ')';
+}
+
+/* Code */
+
+.code {
+	font-family: MonoSpace, "Courier New";
+	font-size: 10pt;
+	font-weight: bold;
+	color: white;
+	background-color: #343434;
+	padding: 5px;
+	margin: 3px;
+}
+
+ul.code {
+	list-style-type: none;
+	display: none;
+	padding: 5px;
+	margin: 3px;
+}
+
+ul.code li {
+	border-bottom: 1px solid #404040;
+	padding: 2px;
+}
+
+ul.code li.info {
+	background-color: #652323;
+}
+
+/* ui-form ui-installation */
+div.ui-form.ui-installation{
+	width: 500px;
+}
+
+div.ui-form.ui-installation h4{
+	margin-top: 30px;
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid gray;
+}
+div.ui-form.ui-installation input[type=text], div.ui-form.ui-installation input[type=password]{
+	width: 99%;
+}
+
+div.ui-form.ui-installation label{
+	font-weight: bold;
+}
+
+div.ui-form.ui-installation dt{
+    margin-bottom: 15px;
+}
+
+.ui-form-hint {
+    display: block;
+    color: gray;
+    font-style: italic;
+}
+
+.ui-form-error {
+    display: block;
+    font-weight: bold;
+    color: red;
+}
