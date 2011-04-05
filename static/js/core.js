@@ -18,7 +18,7 @@ collectopia = {
 	 * @return boolean
 	 */
 	is_null : function(t) {
-		return (is_defined(t) && (t == null))
+		return (is_defined(t) && (t == null));
 	},
 	
 	/**

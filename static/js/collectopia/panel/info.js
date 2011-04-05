@@ -76,17 +76,32 @@ collectopia.InfoPanel = function(map, place) {
 	inner_div.createEl('div', { class : 'description'})
 		.text(place.description);
 	
+	var highlight_marker = function(){
+		var marker = pthis.place.marker;
+		marker.anchor = new google.maps.Point(0,56);
+		marker.scaledSize = marker.size = new google.maps.Size(120, 56);
+		pthis.place.marker.setIcon();
+		pthis.place.marker.setIcon(marker);		
+	};
+	
+	var downlight_marker = function(){
+		var marker = pthis.place.marker;
+		marker.anchor = new google.maps.Point(0,28);
+		marker.scaledSize = marker.size = new google.maps.Size(60, 28);
+		pthis.place.marker.setIcon();
+		pthis.place.marker.setIcon(marker);
+	};
 	
 	// Capture events
 	this.events.bind('closed',function(){
+		
 		delete place.infopanel;	// Remove info panel
+		downlight_marker();
 	});
-	this.events.bind('focus', function(){
-		//console.log('Got focus ' + pthis.title);
-	});
-	this.events.bind('blur', function(){
-		//console.log('Blured ' + pthis.title);
-	});
+	this.events.bind('focus', highlight_marker);
+	this.events.bind('blur', downlight_marker);
+	
+	highlight_marker();
 };
 collectopia.InfoPanel.prototype = new collectopia.Panel();
 collectopia.InfoPanel.prototype.constructor = collectopia.InfoPanel;

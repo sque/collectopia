@@ -18,7 +18,6 @@ collectopia.Map = function(dom, categories) {
 			title : 'create',
 			click : function() {
 				var btn = $(this);
-				
 				if (btn.hasClass('enabled'))
 					return;
 				btn.addClass('enabled');
@@ -29,7 +28,25 @@ collectopia.Map = function(dom, categories) {
 					pthis.drawPlaces();
 				}); 
 				return false;
-			}
+			},
+			category : 'general'
+		},
+		expose : {
+			dom : null,
+			title : 'Full view',
+			click : function() {
+				collectopia.panels.toggleExpose();
+				return false;
+			},
+			initialize : function(btn) {
+				collectopia.panels.events.bind('expose-changed', function(event, params){
+					if (params['enabled'])
+						btn.addClass('enabled');
+					else
+						btn.removeClass('enabled');
+				});
+			},
+			category : 'map-control'
 		}
 	};
 	
@@ -120,10 +137,14 @@ collectopia.Map = function(dom, categories) {
 	var draw_ui_buttons = function ()
 	{	
 		var ul = this.dom.createEl('ul', { class: 'buttons' });
+		var mapcontrolul = this.dom.createEl('ul', { class: 'buttons map-control' });
 		for(var class in this.buttons) {
-			this.buttons[class].dom = ul.createEl('li', { class: class });
-			this.buttons[class].dom.createEl('span', { class: 'description'}).text(this.buttons[class].title)
-				.click(this.buttons[class].click);
+			this.buttons[class].dom = ((this.buttons[class].category == 'map-control')?mapcontrolul:ul).createEl('li', { class: class });
+			this.buttons[class].dom.createEl('span', { class: 'description'}).text(this.buttons[class].title);
+			this.buttons[class].dom.click(this.buttons[class].click);
+			
+			if (collectopia.is_defined(this.buttons[class].initialize))
+					this.buttons[class].initialize(this.buttons[class].dom);
 		}
 		
 		// Add hover effect on buttons

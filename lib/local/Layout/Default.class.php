@@ -80,7 +80,6 @@ class Layout_Default extends Layout
         etag('div id="map-canvas"');
         $def_content = etag('div id="content');
         etag('div id="panels"',
-        	/*, $frm->render()*/
         	tag('div class="info"')
         );		
           		
