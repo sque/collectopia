@@ -1,12 +1,12 @@
-mapness.namespace('mapness');
+collectopia.namespace('collectopia');
 
 /**
  * Specialized version of Panel for Info.
  * @returns
  */
-mapness.InfoPanel = function(map, place) {
+collectopia.InfoPanel = function(map, place) {
 	var pthis = this;
-	mapness.Panel.call(this, 'info', place.name, 
+	collectopia.Panel.call(this, 'info', place.name, 
 		[{'title': 'report fake', 'callback': function(){
 				console.log('Report fake');
 			}
@@ -81,6 +81,12 @@ mapness.InfoPanel = function(map, place) {
 	this.events.bind('closed',function(){
 		delete place.infopanel;	// Remove info panel
 	});
+	this.events.bind('focus', function(){
+		//console.log('Got focus ' + pthis.title);
+	});
+	this.events.bind('blur', function(){
+		//console.log('Blured ' + pthis.title);
+	});
 };
-mapness.InfoPanel.prototype = new mapness.Panel();
-mapness.InfoPanel.prototype.constructor = mapness.InfoPanel;
+collectopia.InfoPanel.prototype = new collectopia.Panel();
+collectopia.InfoPanel.prototype.constructor = collectopia.InfoPanel;

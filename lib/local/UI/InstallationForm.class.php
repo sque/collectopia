@@ -85,7 +85,6 @@ class UI_InstallationForm extends Output_HTML_Form
         Registry::set('db.user', $values['db-user']);
         Registry::set('db.pass', $values['db-pass']);
         Registry::set('db.schema', $values['db-schema']);
-        Registry::set('site.google_analytics', $values['site-ga']);
         Registry::set('site.deploy_checks', $values['deploy-checks']);
         
         // Timezone
@@ -94,7 +93,7 @@ class UI_InstallationForm extends Output_HTML_Form
             
         $data = "<?php\n// File generated with /install\n";
         	
-        foreach(Registry::get_all() as $name => $value)
+        foreach(Registry::get_instance() as $name => $value)
             $data .= sprintf("\nRegistry::set('%s', '%s');\n",
                 addslashes($name),
                 addslashes($value));

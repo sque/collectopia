@@ -1,13 +1,13 @@
 
-mapness.namespace('mapness');
+collectopia.namespace('collectopia');
 
 /**
- * @class Create the complete map for mapness
+ * @class Create the complete map for collectopia
  */
-mapness.Map = function(dom, categories) {
+collectopia.Map = function(dom, categories) {
 	var pthis = this;
 	this.google = {};
-	this.places = {};
+	this.places = {};	
 	this.categories = categories;
 	this.dom = dom;
 	
@@ -23,7 +23,7 @@ mapness.Map = function(dom, categories) {
 					return;
 				btn.addClass('enabled');
 				
-				var create_panel = new mapness.CreatePlacePanel(pthis, pthis.google.geocoder);
+				var create_panel = new collectopia.CreatePlacePanel(pthis, pthis.google.geocoder);
 				create_panel.events.bind('closed', function() {
 					btn.stop(true, true).animate({left: -65}).removeClass('enabled');
 					pthis.drawPlaces();
@@ -116,7 +116,7 @@ mapness.Map = function(dom, categories) {
 	};
 	
 	
-	/* Add button actions on the ui of mapness */
+	/* Add button actions on the ui of collectopia */
 	var draw_ui_buttons = function ()
 	{	
 		var ul = this.dom.createEl('ul', { class: 'buttons' });
@@ -154,12 +154,12 @@ mapness.Map = function(dom, categories) {
 		pthis.drawPlaces();
 	});
 };
-mapness.Map.prototype.drawPlaces = function() {
+collectopia.Map.prototype.drawPlaces = function() {
 	for(var i in this.places){
 		var place = this.places[i];
 		
 		// Skip the rendered ones.
-		if (mapness.is_defined(place.marker))
+		if (collectopia.is_defined(place.marker))
 			continue;
 		
 		place.marker = new google.maps.Marker( {
@@ -183,15 +183,15 @@ mapness.Map.prototype.drawPlaces = function() {
 		var pthis = this;
 		google.maps.event.addListener(place.marker, 'click', function() {
 			if (this.place.infopanel == undefined)
-				this.place.infopanel = new mapness.InfoPanel(pthis, this.place);
+				this.place.infopanel = new collectopia.InfoPanel(pthis, this.place);
 		});
 	};
 };
-mapness.Map.prototype.showPlace = function(place_id) {
+collectopia.Map.prototype.showPlace = function(place_id) {
 	var place = this.places[place_id];
 	if ((place_id == undefined)
 		|| ((place = this.places[place_id]) == undefined))
 		return;
 	this.google.map.panTo(new google.maps.LatLng(place.loc_lat, place.loc_lng));
 	this.google.map.setZoom(10);
-}
+};

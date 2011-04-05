@@ -1,7 +1,7 @@
 /*
- * Core utils and namespace for mapness
+ * Core utils and namespace for collectopia
  */
-mapness = {
+collectopia = {
 	
 	/**
 	 * Check if this var is defined
@@ -50,7 +50,7 @@ mapness = {
 		
 		var parent = window;
 		for(var i in ns) {
-			if (! mapness.is_defined(parent[ns[i]]))
+			if (! collectopia.is_defined(parent[ns[i]]))
 				parent[ns[i]] = {};
 			parent = parent[ns[i]];
 		}
@@ -84,4 +84,4 @@ mapness = {
 	 * Default uuid is v4
 	 */
 	uuid : this.uuid_v4
-}
+};

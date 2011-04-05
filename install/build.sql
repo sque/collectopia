@@ -80,3 +80,11 @@ CREATE TABLE `actions_log` (
 );
 
 INSERT INTO `users` (`username`, `password`, `enabled`) values ('root', sha1('root'), 1);
+
+INSERT INTO `categories` (`tag`, `color`, `title`) VALUES
+	('food', 'ff0000', 'Food'),
+	('freestuff', '993399', 'FreeStuff'),
+	('fun', '00cc00', 'Fun'),
+	('house', 'ff9933', 'House'),
+	('learning', '3333ff', 'Learning'),
+	('talk', '000000', 'Black');

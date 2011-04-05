@@ -11,25 +11,25 @@
  */
 class Category extends DB_Record
 {
-  public static $table = "categories";
+	public static $table = "categories";
 
-  public static $fields = array(
+	public static $fields = array(
     'tag' => array('pk' => true,),
     'color' ,
     'title' ,
 
-  );
-  
-  /**
-   * Get all the categories in an associative array 
-   */
-  public static function open_all_to_array()
-  {
-  	$categories = array();
-	foreach(Category::open_all() as $cat)
+	);
+
+	/**
+	 * Get all the categories in an associative array
+	 */
+	public static function open_all_to_array()
+	{
+		$categories = array();
+		foreach(Category::open_all() as $cat)
 		$categories[$cat->tag] = $cat->toArray();
-	return $categories;
-  }
+		return $categories;
+	}
 }
 
 Category::many_to_many('Place', 'PlacesCats', 'categories', 'places');

@@ -60,10 +60,11 @@ class Layout_Default extends Layout
         $this->get_document()->add_ref_js(surl('/static/js/jquery-createEl.js'));        
         $this->get_document()->add_ref_js(surl('/static/js/core.js'));
         $this->get_document()->add_ref_js('http://maps.google.com/maps/api/js?sensor=false');
-        $this->get_document()->add_ref_js(surl('/static/js/mapness/map.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/mapness/panel.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/mapness/panel/createplace.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/mapness/panel/info.js'));
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/map.js'));
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panelsystem.js'));
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel.js'));        
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/createplace.js'));
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/info.js'));
         
     	// Extra css
     	$style = '';
@@ -87,7 +88,7 @@ class Layout_Default extends Layout
         
         etag('script type="text/javascript" html_escape_off', "
         $(document).ready(function() {
-			map = new mapness.Map($('#content'), " . json_encode($categories) . ");
+			map = new collectopia.Map($('#content'), " . json_encode($categories) . ");
 		});
         ");
 

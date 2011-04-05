@@ -725,5 +725,11 @@ class DB_Record
 		// Initialize static
 		$this->model = self::init_model(get_class($this));
 	}
+	
+	//! Convert this record to array
+	public function toArray()
+	{
+		return $this->fields_data;
+	}
+	
 }
-?>

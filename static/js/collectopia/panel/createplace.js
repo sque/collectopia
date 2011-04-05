@@ -1,13 +1,13 @@
-mapness.namespace('mapness');
+collectopia.namespace('collectopia');
 
 /**
  * Specialized version of Panel for Create form.
  * @returns
  */
-mapness.CreatePlacePanel = function(map, geocoder) {
+collectopia.CreatePlacePanel = function(map, geocoder) {
 	var pthis = this,
 		marker_moved_action;
-	mapness.Panel.call(this, 'place-new', 'create', 
+	collectopia.Panel.call(this, 'place-new', 'create', 
 		[{'title': 'send', 'callback': function(){
 				pthis.submitForm();
 			}
@@ -65,7 +65,7 @@ mapness.CreatePlacePanel = function(map, geocoder) {
 		
 		// Fade out
 		pthis.marker.setMap(null);
-		pthis.dom.delay(1500).fadeOut('slow', function(){	pthis.close(); });		
+		pthis.dom.delay(1500).fadeOut('slow', function(){	pthis.close(); });
 	});
 	this.events.bind('submit_error', function(event, data){
 		var indiv = pthis.dom.children('div');
@@ -77,7 +77,7 @@ mapness.CreatePlacePanel = function(map, geocoder) {
 	});
 
 	/* Listen on marker "position_changed" and update location on creation form */
-	google.maps.event.addListener(this.marker, 'dragend', marker_moved_action = function(){
+	google.maps.event.addListener(this.marker, 'dragend', marker_moved_action = function() {
 		geocoder.geocode({'latLng': pthis.marker.getPosition(), 'language' : 'en'}, function(results, status) {
 			pthis.setLocation(results[0].geometry.location);
 			if (status == google.maps.GeocoderStatus.OK) {				
@@ -88,8 +88,8 @@ mapness.CreatePlacePanel = function(map, geocoder) {
 	marker_moved_action();
 	
 };
-mapness.CreatePlacePanel.prototype = new mapness.Panel();
-mapness.CreatePlacePanel.prototype.constructor = mapness.CreatePlacePanel;
+collectopia.CreatePlacePanel.prototype = new collectopia.Panel();
+collectopia.CreatePlacePanel.prototype.constructor = collectopia.CreatePlacePanel;
 
 
 /**
@@ -97,14 +97,14 @@ mapness.CreatePlacePanel.prototype.constructor = mapness.CreatePlacePanel;
  * @param name The "name" attribute of the input element in form.
  * @param value The value to set in the input element.
  */
-mapness.CreatePlacePanel.prototype.setField = function(name, value) {
+collectopia.CreatePlacePanel.prototype.setField = function(name, value) {
 	this.dom.find('input[name=' + name + ']').val(value);
 };
 
 /**
  * Helper function to set the location elements of the form.
  */
-mapness.CreatePlacePanel.prototype.setLocation = function(loc) {
+collectopia.CreatePlacePanel.prototype.setLocation = function(loc) {
 	this.setField('loc_lat', loc.lat());
 	this.setField('loc_lng', loc.lng());
 };
@@ -112,7 +112,7 @@ mapness.CreatePlacePanel.prototype.setLocation = function(loc) {
 /**
  * Helper function to set the geocode elements of the form
  */
-mapness.CreatePlacePanel.prototype.setGeocode = function(geo) {
+collectopia.CreatePlacePanel.prototype.setGeocode = function(geo) {
 	// Find in geocode data an entry by type
 	var get_by_type = function(type) {
 		var ac = geo['address_components'];

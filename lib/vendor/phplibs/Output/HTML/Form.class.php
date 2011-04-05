@@ -591,7 +591,7 @@ class Output_HTML_Form
         etag('ul class="fields"')->push_parent();
         foreach($this->fields as $id => $field)
         {
-            etag('li')->add_class('type-' . $field['type'])->push_parent();
+            etag('li')->add_class('type-' . $field['type'])->attr('name', $id)->push_parent();
 
             // Line type
             if ($field['type'] == 'line')

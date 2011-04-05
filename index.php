@@ -30,16 +30,13 @@ require_once dirname(__FILE__) . '/web/layouts.php';
  * then you should it here.
  */
 // Deploy checks
-if (Registry::get('site.deploy_checks'))
-{
-    if (is_writable(dirname(__FILE__) . '/config.inc.php'))
-    {
+if (Registry::get('site.deploy_checks')) {
+    if (is_writable(dirname(__FILE__) . '/config.inc.php')) {
         echo 'Security check: "config.inc.php" is writable, change file permissions and retry.';
         exit;
     }
     
-    if (is_dir(dirname(__FILE__) . '/install'))
-    {
+    if (is_dir(dirname(__FILE__) . '/install')) {
         echo 'Security check: You must delete folder "/install" if you have installed site.';
         exit;
     }
@@ -74,4 +71,3 @@ Stupid::add_rule('include_sub',
 Stupid::set_default_action(create_function('', 'require(dirname(__FILE__) . "/web/not_found.php");'));
 Stupid::chain_reaction();
 
-?>
