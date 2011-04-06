@@ -92,15 +92,18 @@ div#content {
 	-webkit-border-radius: 25px;
 	border-radius: 25px;
 	box-shadow: 0 0 10px #676767;
+	-webkit-box-shadow: 0 0 10px #676767;
+	-moz-box-shadow: 0 0 10px #676767;
 	width: 340px;
 }
+
 .panel > div{
 	background-color: white;
 	padding: 5px;
 	border: 2px solid #cccccc;	
 	font-size: 8pt;
 }
-.panel .close {
+.panel .close{
 	position: absolute;
 	right: -6px;
 	top: -9px;
@@ -147,6 +150,12 @@ div#content {
 	top: -7px;
 	left: 11px;
 	border-bottom: none;
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+.panel .title:hover {
+	background: white url('images/move.png') no-repeat 5px center;
 	cursor: pointer;
 }
 

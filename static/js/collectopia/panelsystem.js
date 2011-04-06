@@ -33,12 +33,20 @@ collectopia.PanelSystem = function() {
 				if (i == pthis.zorder.length - 1) {
 					panel.dom.css({'box-shadow' : '0px 0px 10px 0px #880000'});
 				} else {
-					panel.dom.css({'box-shadow' : 'inherit'});
+					panel.dom.css({'box-shadow' : ''});
 				}
 			}
 			
 		}
 	};
+};
+
+/**
+ * Get the size of the panel system
+ */
+collectopia.PanelSystem.prototype.size = function() {
+	var container = $('#wrapper');
+	return { width: container.width(), height: container.height()};
 };
 
 /**
@@ -95,6 +103,9 @@ collectopia.PanelSystem.prototype.bringToFront= function(panel_id) {
 	if (zpos == -1)
 		return; // WTF Data!?
 	
+	// Switch off expose mode
+	this.switchExposeOff();
+	
 	if (zpos == this.zorder.length - 1)
 		return; // Already panel to foreground
 	
@@ -123,6 +134,7 @@ collectopia.PanelSystem.prototype.switchExposeOn = function() {
 	this.expose_mode.enabled = true;
 	this.expose_mode.stored_state.positions = {};
 	
+	var system_size = this.size();
 	for(var id in this.all_panels) {
 		var p = this.all_panels[id].dom;
 		
@@ -132,8 +144,8 @@ collectopia.PanelSystem.prototype.switchExposeOn = function() {
 		};
 		
 		// Animate to the borders
-		if ((p.width() / 2 + p.offset().left ) > document.width /2)
-			p.animate({ left : document.width});
+		if ((p.width() / 2 + p.offset().left ) > system_size.width /2)
+			p.animate({ left : system_size.width});
 		else
 			p.animate({ left : - (p.width() + 30)});
 	}

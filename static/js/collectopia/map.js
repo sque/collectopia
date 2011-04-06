@@ -55,7 +55,7 @@ collectopia.Map = function(dom, categories) {
 	var init_google_map = function() {
 		var myLatlng = new google.maps.LatLng(0,0);
 		this.google.mapOptions = {
-			zoom : 2,
+			zoom : 3,
 			center : myLatlng,
 			mapTypeId : google.maps.MapTypeId.ROADMAP,
 			disableDefaultUI : true,
@@ -205,6 +205,8 @@ collectopia.Map.prototype.drawPlaces = function() {
 		google.maps.event.addListener(place.marker, 'click', function() {
 			if (this.place.infopanel == undefined)
 				this.place.infopanel = new collectopia.InfoPanel(pthis, this.place);
+			else
+				this.place.infopanel.bringToFront();
 		});
 	};
 };

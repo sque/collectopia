@@ -27,7 +27,8 @@ collectopia.Panel = function(type, title, actions, parent) {
 	// Create window DOM	
 	this.dom_parent = (parent == undefined)?$('#content'):parent;
 	this.dom = $('<div class="panel"/>').append(
-			inner_div = $('<div><span class="title">' + title + '</span><span class="close">close</span>' +
+			inner_div = $('<div><span class="title">' + title + '</span>' +
+			'<span class="close">close</span>' +
 				'</div>')
 		)
 		.append($('<ul class="actions"></ul>'))
@@ -53,7 +54,7 @@ collectopia.Panel = function(type, title, actions, parent) {
 	this.dom.mousedown(function(event){
 		pthis.bringToFront();
 	});
-	this.dom.draggable({ handle : 'span.title', cursor: 'crosshair'});
+	this.dom.draggable({ handle : '.title', cursor: 'crosshair'});
 	this.dom.find('.close').click(function(){
 		pthis.close();
 	});
@@ -89,8 +90,8 @@ collectopia.Panel.prototype.close = function() {
 		// Everything is finished
 		pthis.events.triggerHandler('closed', { panel: pthis});
 	});
-	
 };
+
 /**
  * Submit the embeded form
  */
@@ -111,11 +112,45 @@ collectopia.Panel.prototype.submitForm = function(selector) {
 			return;
 		}
 		pthis.events.triggerHandler('submit', data);
-	});	
+	});
 };
+
 /**
  * Bring to front z-index
  */
 collectopia.Panel.prototype.bringToFront = function() {
 	collectopia.panels.bringToFront(this.id);
+};
+
+/**
+ * Get the size of the panel
+ */
+collectopia.Panel.prototype.size = function(){
+	return { width: this.dom.outerWidth(), height: this.dom.outerHeight() };
+};
+
+/**
+ * Move the panel at an offset
+ */
+collectopia.Panel.prototype.move = function(left, top) {
+	this.dom.offset({left: left, top: top});
+};
+
+/**
+ * Move the panel near something?
+ */
+collectopia.Panel.prototype.move_near = function(left, top, width, height) {
+	var view_size = collectopia.panels.size();
+	var panel_size = this.size();
+	var dest_point = { left: left + width, top: top };
+	
+	// If there is no space on right and the space on left is enough
+	if (((left + width + panel_size.width) > view_size.width) && (left > panel_size.width))
+		dest_point.left = left - panel_size.width;
+	
+	console.log(left, top, panel_size, view_size);
+	if ((top + panel_size.height) > view_size.height)
+		dest_point.top = view_size.height - panel_size.height; 
+	
+	this.move(dest_point.left, dest_point.top);
 };

@@ -102,6 +102,21 @@ collectopia.InfoPanel = function(map, place) {
 	this.events.bind('blur', downlight_marker);
 	
 	highlight_marker();
+	
+	// Move window where the marker is
+	marker_pos = this.getMarkerPoint();
+	this.move_near(marker_pos.x - 10, marker_pos.y - 56, 140, 56);
 };
 collectopia.InfoPanel.prototype = new collectopia.Panel();
 collectopia.InfoPanel.prototype.constructor = collectopia.InfoPanel;
+
+collectopia.InfoPanel.prototype.getMarkerPoint = function(){
+	
+	var
+		map = this.map.google.map,
+		topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast()),
+	    bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest()),
+	    scale = Math.pow(2,map.getZoom()),
+	    worldPoint = map.getProjection().fromLatLngToPoint(this.place.marker.getPosition());
+	 return new google.maps.Point((worldPoint.x - bottomLeft.x)*scale,(worldPoint.y-topRight.y)*scale); 
+};
