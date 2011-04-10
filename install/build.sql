@@ -69,7 +69,7 @@ CREATE TABLE `places_cats` (
 	PRIMARY KEY (`cat_tag`, `place_id`),
 	FOREIGN KEY (`cat_tag`) REFERENCES `categories` (`tag`),
 	FOREIGN KEY (`place_id`) REFERENCES `places` (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET UTF8;
 
 CREATE TABLE `actions_log` (
 	`id` integer auto_increment,
@@ -77,7 +77,26 @@ CREATE TABLE `actions_log` (
 	`when` DATETIME not null,
 	`what` TEXT,
 	PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET UTF8;
+
+CREATE TABLE `photos` (
+	`id` integer auto_increment,
+	`place_id` integer NOT NULL,
+	`name` varchar(255) NOT NULL,
+	`width` integer NOT NULL,
+	`height` integer NOT NULL,
+	`data_hash` char(32) NOT NULL,	
+	PRIMARY KEY(`id`),
+	FOREIGN KEY (`place_id`) REFERENCES `places` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET UTF8; 
+
+CREATE TABLE `tmp_photos` (
+	`key` char(32) NOT NULL,
+	`name` varchar(255) NOT NULL,
+	`data_hash` char(32) NOT NULL,	
+	`created_at` DATETIME not null,
+	PRIMARY KEY(`key`)
+) ENGINE=InnoDB DEFAULT CHARSET UTF8; 
 
 INSERT INTO `users` (`username`, `password`, `enabled`) values ('root', sha1('root'), 1);
 

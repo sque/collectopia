@@ -20,6 +20,16 @@ collectopia.CreatePlacePanel = function(map, geocoder) {
 		position : map.google.map.getCenter(),
 		draggable : true
 	});
+	
+	// Try to adjust view 
+	var mpoint = this.marker.getPoint();
+	var view = collectopia.panels.size();
+	this.move(view.width - this.dom.width() - 240, 15);
+	if (map.google.map.getZoom() < 5)
+		map.google.map.setZoom(map.google.map.getZoom() + 2);
+	else if (map.google.map.getZoom() < 7)
+		map.google.map.setZoom(7);
+	
 	// Add extra stuff on the form	
 	(function(){
 		this.dom.find('form').attr('action', 'api/place/new');		
@@ -45,7 +55,7 @@ collectopia.CreatePlacePanel = function(map, geocoder) {
 				});
 		}
 		
-		this.dom.find('ul.fields').append($('<li class="address">none</li>'));		
+		this.dom.find('ul.fields').append($('<li class="address" name="address"><div>none</div></li>'));		
 	}).call(this);
 	
 	
@@ -79,14 +89,78 @@ collectopia.CreatePlacePanel = function(map, geocoder) {
 	/* Listen on marker "position_changed" and update location on creation form */
 	google.maps.event.addListener(this.marker, 'dragend', marker_moved_action = function() {
 		geocoder.geocode({'latLng': pthis.marker.getPosition(), 'language' : 'en'}, function(results, status) {
-			pthis.setLocation(results[0].geometry.location);
-			if (status == google.maps.GeocoderStatus.OK) {				
+			if (status == google.maps.GeocoderStatus.OK) {
+				pthis.setLocation(results[0].geometry.location);
 				pthis.setGeocode(results[0]);
+			} else {
+				pthis.setLocation();
+				pthis.dom_body.find('.address div').text('none');
 			}
+			
+			// On update remove error hints
+			pthis.dom_body.find('.address .ui-form-error').remove();
+ 				
 		});
 	});
 	marker_moved_action();
 	
+	/* Photos upload area */
+	this.dom.find('form').wrap('<table><tr><td class="left-row" /><td class="right-row">' +
+			'<div><table class="photos-grid"/></div></td></tr></table>');	
+	this.dom.find('table td:first-child').append('<form method="post" class="photos-upload" action="api/photo/new">' +
+			'<input name="image" type="file" multiple>' +
+			'<button>Upload</button><div>Upload photos</div></form>');
+	
+	var get_current_photos = function() {
+    	var form_photos = pthis.dom.find('input[name=photos]');
+    	return form_photos.val().length == 0?[]:form_photos.val().split(',');    	
+	};
+	
+	var set_current_photos = function(photos) {
+    	var form_photos = pthis.dom.find('input[name=photos]');
+    	form_photos.val(photos.join(','));    	
+	};
+	
+	this.dom.find('.photos-upload').fileUploadUI({
+        uploadTable: this.dom.find('.photos-grid'),
+        downloadTable: this.dom.find('.photos-grid'),
+        buildUploadRow: function (files, index) {
+            return $('<tr class="upload"><td colspan="2" class="fname"><div>' + files[index].name + '</div>' + 
+                    '<div class="file_upload_progress"><div /></div></td>' +
+                    '<td class="file_upload_cancel delete">' +
+                    '<button class="ui-state-default ui-corner-all" title="Cancel">' +
+                    '<span class="ui-icon ui-icon-cancel">Cancel</span>' +
+                    '</button></td></tr>');
+        },
+        buildDownloadRow: function (file) {
+        	var current_photos = get_current_photos();
+        	current_photos.push(file.key);
+        	set_current_photos(current_photos);
+        	
+            var a = $('<tr><td class="image"><img></td><td class="fname"><div>' + file.name + '</div></td>' +
+            		'<td class="delete">' +
+            		'<button class="ui-state-default ui-corner-all" title="Delete">' +
+            		'<span class="ui-icon ui-icon-trash">Delete</span></button>' +
+            		'</td></tr>');
+            a.find('img').attr('src', file.thumb);
+            a.find('button').data('key', file.key).click(function(event){
+            	a.hide('fast', function(){ a.remove(); }); 
+            	var current_photos = get_current_photos();
+            	var idx = current_photos.indexOf(file.key);
+            		if(idx >= 0)
+            			current_photos.splice(idx, 1);
+            	set_current_photos(current_photos);
+            	$.get('api/photo/' + String(file.key) + '/+drop', function(data){});
+            });
+            return a;
+        },
+        initUpload : function (event, files, index, xhr, handler, callBack) {
+        	pthis.dom.addClass('show-uploads').animate({ width : 542 });
+        	handler.initUploadRow(event, files, index, xhr, handler, function () {        		
+        		callBack();
+        	});
+        }
+    });
 };
 collectopia.CreatePlacePanel.prototype = new collectopia.Panel();
 collectopia.CreatePlacePanel.prototype.constructor = collectopia.CreatePlacePanel;
@@ -105,8 +179,13 @@ collectopia.CreatePlacePanel.prototype.setField = function(name, value) {
  * Helper function to set the location elements of the form.
  */
 collectopia.CreatePlacePanel.prototype.setLocation = function(loc) {
-	this.setField('loc_lat', loc.lat());
-	this.setField('loc_lng', loc.lng());
+	if (collectopia.is_defined(loc)) {
+		this.setField('loc_lat', loc.lat());
+		this.setField('loc_lng', loc.lng());
+	} else {
+		this.setField('loc_lat', '');
+		this.setField('loc_lng', '');
+	}
 };
 
 /**
@@ -153,5 +232,5 @@ collectopia.CreatePlacePanel.prototype.setGeocode = function(geo) {
 		this.setField('pos_administrative_area_level_2', ad_level_2.long_name);
 	
 	this.setField('pos_address', geo.formatted_address);
-	this.dom.find('.address').text(geo.formatted_address);
+	this.dom.find('.address > div').text(geo.formatted_address);
 };

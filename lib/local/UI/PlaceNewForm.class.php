@@ -11,7 +11,8 @@ class UI_PlaceNewForm extends Output_HTML_Form
         	'web' => array('display' => 'Website'),
         	'tel' => array('display' => 'Phone'),
 			'description' => array('display' => 'Description', 'type' => 'textarea',
-        		'regcheck' => '/^.{10,}$/', 'onerror' => 'Give a description of the place.'),        	
+        		'regcheck' => '/^.{10,}/', 'onerror' => 'Give a description of the place.'),
+        	'photos' => array('type' => 'hidden', 'value' => ''),        	
         	'loc_lat' => array('type' => 'hidden', 'regcheck' => '/^-?\d{1,3}\.?\d+$/'),
         	'loc_lng' => array('type' => 'hidden', 'regcheck' => '/^-?\d{1,3}\.?\d+$/'),
         	'pos_country' => array('type' => 'hidden'),        	
@@ -34,13 +35,19 @@ class UI_PlaceNewForm extends Output_HTML_Form
     public function on_post()
     { 
 		header('Content-type: application/json');
-    	$this->hide();
+    	$this->hide();    	
     	
     	if(!$this->is_valid()) {
     			$error_fields = array();
-    		foreach($this->fields as $name => $field)
+    		foreach($this->fields as $name => $field) {
+    			if ($field['valid'])
+    				continue;
+    				
     			if (isset($field['error']))
     				$error_fields[$name] = $field['error'];
+    			if (in_array($name, array('loc_lat', 'loc_lng')))
+    				$error_fields['address'] = 'This is not a valid address.';
+    		}
     		echo json_encode(array('error' => 'There where errors in form!', 'fields' => $error_fields));
     	}
     }
@@ -75,6 +82,14 @@ class UI_PlaceNewForm extends Output_HTML_Form
     	foreach(explode(',', $values['categories']) as $cat)
     		PlacesCats::create(array('cat_tag' => $cat, 'place_id' => $place->id));
     	
-    	echo json_encode($place->toArray());    	
+    	// Add the photos
+    	foreach(explode(',', $values['photos']) as $photo){
+    		if ($photo == '')
+    			continue;
+    		if ($p = TmpPhoto::open($photo))
+    			$p->move_at_place($place);
+    	}
+    		
+    	echo json_encode($place->all_data());    	
     }
 };

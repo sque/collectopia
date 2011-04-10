@@ -20,6 +20,14 @@
  */
 
 
+Stupid::add_rule('photo_new',
+    array('type' => 'url_path', 'chunk[2]' => '/^photo$/', 'chunk[3]' => '/^new$/')
+);
+
+Stupid::add_rule('photo_drop_temp',
+    array('type' => 'url_path', 'chunk[2]' => '/^photo$/', 'chunk[3]' => '/^(?P<key>[\w]+)$/', 'chunk[4]' => '/^\+drop$/')
+);
+
 Stupid::add_rule('place_new',
     array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^new$/') 
 );
@@ -38,7 +46,6 @@ Stupid::add_rule('search',
     array('type' => 'url_path', 'chunk[2]' => '/^search$/'),
     array('type' => 'url_params', 'op' => 'isset', 'param' => 'query') 
 );
-
 Stupid::add_rule('category_all',
     array('type' => 'url_path', 'chunk[2]' => '/^category/') 
 );
@@ -125,13 +132,12 @@ function place_rate($id) {
 
 function place_all(){
 	header('Content-type: application/json');
-	$places = Place::raw_query()->select(Place::model()->fields())->execute();
-	foreach($places as $idx => & $place)
-		foreach(PlacesCats::raw_query()
-			->select(array('cat_tag'))->where('place_id = ?')->execute($place['id']) as $cat)
-			$place['categories'][] = $cat['cat_tag']; 
-	unset($place);
-	echo json_encode($places);
+	$places = Place::open_all();
+	$data = array();
+	foreach($places as $p)
+		$data[$p->id] = $p->all_data();
+
+	echo json_encode($data);
 }
 
 function category_all(){
@@ -156,4 +162,42 @@ function search(){
 	}
 	
 	echo json_encode($hits);
+}
+
+function photo_new() {
+	if ((!isset($_FILES['image'])) || ($_FILES['image']['error'] != 0))
+		return;
+
+	$img = new Image($_FILES['image']['tmp_name']);
+	$img_data = $img->data(array('format' => IMAGETYPE_JPEG, 'quality' => 93));
+	$data_hash = md5($img_data);
+
+	$tmp_photo = TmpPhoto::create(array(
+		'key' => md5($data_hash . rand(1, getrandmax())),
+		'name' => $_FILES['image']['name'],
+		'data_hash' => $data_hash
+	));
+	file_put_contents($tmp_photo->fpath(), $img_data);
+	$thumb = $img->resize(48, 48, false);
+	
+	// Clean up expired photos
+	TmpPhoto::cleanUpExpired();
+	
+	header('Content-type: application/json');
+	echo json_encode(array(
+		'name' => $tmp_photo->name,
+		'key' => $tmp_photo->key,
+		'type' => 'image/jpeg',
+		'size' => count($img_data),
+		'thumb' => 'data:image/jpeg;base64,' .base64_encode($thumb->data(array('format' => IMAGETYPE_JPEG, 'quality' => 91)))
+	));	
+}
+
+function photo_drop_temp($key) {
+	if (!($photo = TmpPhoto::open($key))){
+		include __DIR__ . '/../not_found.php';
+		exit;
+	}
+
+	$photo->delete();
 }

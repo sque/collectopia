@@ -24,35 +24,54 @@
  */
 class Place extends DB_Record
 {
-  public static $table = "places";
+	public static $table = "places";
 
-  public static $fields = array(
-    'id' => array('pk' => true,'ai' => true,),
-    'name' ,
-    'loc_lng' ,
-    'loc_lat' ,
-    'country' ,
-  	'area_level_1',
-  	'area_level_2',
-    'city' ,
-    'street' ,
-    'street_number' ,
-    'address' ,
-    'email' ,
-    'web' ,
-    'tel' ,
-    'description' ,
-  	'rate_current',
-  	'rate_total',
-    'created_at' => array('type' => 'datetime',),	
-  );
+	public static $fields = array(
+	    'id' => array('pk' => true,'ai' => true,),
+	    'name' ,
+	    'loc_lng' ,
+	    'loc_lat' ,
+	    'country' ,
+	  	'area_level_1',
+	  	'area_level_2',
+	    'city' ,
+	    'street' ,
+	    'street_number' ,
+	    'address' ,
+	    'email' ,
+	    'web' ,
+	    'tel' ,
+	    'description' ,
+	  	'rate_current',
+	  	'rate_total',
+	    'created_at' => array('type' => 'datetime',),	
+	);
+	
+	public function all_data() {
+		
+		$place = $this->toArray();
+		// Enrich with category info
+		foreach(PlacesCats::raw_query()
+			->select(array('cat_tag'))->where('place_id = ?')->execute($place['id']) as $cat)
+			$place['categories'][] = $cat['cat_tag'];
+		// Enrich with photo info
+		foreach(Photo::open_query()
+			->where('place_id = ?')->execute($place['id']) as $photo) {
+			
+			$place['photos'][] = array(
+				'url' => url('/data/photos/' . $photo->fname()),
+				'thumb_url' => url('/data/photos/' . $photo->gen_and_thumb_fname(154, 115)));
+		}
+		
+		return $place;
+	}
 }
 
 Place::events()->connect('op.pre.create', create_function('$e', '
 	$e->filtered_value["created_at"] = new DateTime();
 '));
 
-Place::events()->connect('op.post.create', create_function('$e', '	
+Place::events()->connect('op.post.create', create_function('$e', '
 	$p = $e->arguments["record"];
 	SearchIndex::open()->addPlace($p);
 '));

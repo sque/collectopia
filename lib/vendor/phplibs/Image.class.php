@@ -139,7 +139,7 @@ class Image
         imagealphablending($img, false);
         if ($this->meta['type'] == 'gif')
         {
-            $trans_color = imagecolorsforindex($this->image, imagecolortransparent($this->image));
+            $trans_color = (imagecolortransparent($this->image) < 0)?-1:imagecolorsforindex($this->image, imagecolortransparent($this->image));
             $trans_index = imagecolorallocatealpha(
                 $img,
                 $trans_color['red'],
@@ -492,4 +492,3 @@ class Image
     }
 }
 
-?>

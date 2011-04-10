@@ -154,8 +154,11 @@ div#content {
 	padding-right: 25px;
 }
 
-.panel .title:hover {
+.panel:hover .title {
 	background: white url('images/move.png') no-repeat 5px center;
+}
+
+.panel .title:hover {	
 	cursor: pointer;
 }
 
@@ -181,7 +184,14 @@ div#content {
 	resize: vertical;
 }
 
+
+
 /** CreatePanel **/
+.panel.place-new form {
+	padding: 0px;
+	margin: 0px;
+}
+
 .panel.place-new textarea,
 .panel.place-new input{
 	width: 98%;
@@ -222,6 +232,68 @@ div#content {
 	background-color: red;
 }
 
+.panel.place-new ul.fields li.address > div{
+	font-weight: bold;
+	font-size: 1.3em;
+}
+
+
+.panel.place-new table {
+	border-spacing: 0px;
+}
+
+.panel.place-new table td.right-row {
+	width: 0px;
+	vertical-align: bottom;
+}
+
+.panel.place-new.show-uploads table td.right-row {	
+	border-left: 1px solid #9a9a9a;	
+	padding: 0px;
+	width: 200px;
+	height: 100%;
+}
+
+.panel.place-new.show-uploads table td.right-row > div{
+	width: 200px;
+	height: 100%;
+	overflow: auto;
+}
+	
+
+.panel.place-new .photos-grid {
+	width: 100%;
+	border-spacing: 0px;
+}
+
+.panel.place-new .photos-grid tr:nth-child(odd) td{
+	background-color: #f0f0f0;
+}
+
+.panel.place-new .photos-grid td.image{
+	width: 48px;
+	text-align: center;
+	padding: 1px 0px;
+}
+
+.panel.place-new .photos-grid td.fname div{
+	word-wrap: break-word;	
+	width: 90px;
+	padding: 4px 4px 0px 4px;
+}
+
+.panel.place-new .photos-grid tr.upload td.fname div{
+	width: 138px;
+}
+
+.panel.place-new .photos-grid td.delete{
+	width: 36px;
+}
+
+.panel.place-new .photos-grid td{
+	padding: 0px;
+}
+
 /** InfoPanel **/
 .panel.info {
 
@@ -240,6 +312,10 @@ div#content {
 .panel.info .description{
 	padding: 2px;
 	font-size: 9pt;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 400px;
+    overflow: auto;
 }
 
 .panel.info ul.categories{
@@ -254,6 +330,42 @@ div#content {
 	display: inline-block;
 	margin-left: 5px;
 }
+
+.panel .photos {
+	width: 160px;
+	text-align: center;
+	margin-right: 10px;
+	margin-bottom: 5px;
+}
+.panel .photos .gallery a{
+	display: block;
+	width: 160px;
+	height: 121px;
+	background-color: white;
+}
+
+.panel .photos  .gallery a img{
+	display: block;
+	margin: 0px auto;
+	border: 3px solid #9a9a9a;
+	border-radius: 3px;
+}
+
+.panel .photos .pager{
+	display: inline-block;
+}
+
+.panel .photos .pager a{
+	display: inline-block;
+	background: transparent url('images/pager-dot.png') no-repeat center center;
+	width: 16px;
+	height: 16px;
+}
+
+.panel .photos .pager a.activeSlide{
+	background-image: url('images/pager-dot-active.png');
+}
+
 
 /** search **/
 .widget.search ul.results {

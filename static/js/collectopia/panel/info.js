@@ -17,7 +17,7 @@ collectopia.InfoPanel = function(map, place) {
 	this.map = map;
 	
 	// Draw panel
-	var inner_div = this.dom.children('div');
+	var inner_div = this.dom_body;
 	var info = inner_div.createEl('ul', {class: 'info'});
 	var show_place_info_field = function(field, title){
 		if ((place[field] != null) && (place[field] != ''))
@@ -71,8 +71,39 @@ collectopia.InfoPanel = function(map, place) {
 			.append($('<span class="number"/>').text(place.rate_total))
 			.append(' votes)');
 		
+	inner_div.createEl('hr');
+	
+	// Photos
+	if (typeof place.photos != 'undefined') {
+		var cont = inner_div.createEl('div', { class : 'photos'});
+		var gal = cont.createEl('div', {class : 'gallery'});
+		for(var i in place.photos)
+			gal.createEl('a', { rel : 'photos_place_' + this.place.id, 'href' : place.photos[i]['url'], target: '_blank'})
+				.createEl('img', { src : place.photos[i]['thumb_url']});
+		gal.after('<div class="pager" id="photos_nav_' + String(this.place.id) + '" >')
+			.cycle({ 
+		    fx:     'scrollLeft', 
+		    timeout: 5000,
+		    pager:  '#photos_nav_' + String(this.place.id),
+		    pagerAnchorBuilder: function(index, dom) {
+		    	return '<a href="#"> </a>';
+		    }
+		 });
 		
-	inner_div.createEl('hr');	
+		gal.find('a').fancybox({
+			'speedIn'		:	600, 
+			'speedOut'		:	200, 
+			'overlayShow'	:	false,
+			'onStart' : function(){
+				collectopia.panels.enableKeyboardEvents(false);
+			},
+			'onClosed' : function(){
+				collectopia.panels.enableKeyboardEvents(true);
+			}
+		});
+	}
+	
+	// Description
 	inner_div.createEl('div', { class : 'description'})
 		.text(place.description);
 	
@@ -91,6 +122,7 @@ collectopia.InfoPanel = function(map, place) {
 		pthis.place.marker.setIcon();
 		pthis.place.marker.setIcon(marker);
 	};
+	inner_div.createEl('div', { class: 'spacer', style : 'clear: both;' });
 	
 	// Capture events
 	this.events.bind('closed',function(){
@@ -104,19 +136,9 @@ collectopia.InfoPanel = function(map, place) {
 	highlight_marker();
 	
 	// Move window where the marker is
-	marker_pos = this.getMarkerPoint();
-	this.move_near(marker_pos.x - 10, marker_pos.y - 56, 140, 56);
+	marker_pos = this.place.marker.getPoint();
+	this.moveNear(marker_pos.x - 10, marker_pos.y - 56, 140, 56);
 };
 collectopia.InfoPanel.prototype = new collectopia.Panel();
 collectopia.InfoPanel.prototype.constructor = collectopia.InfoPanel;
 
-collectopia.InfoPanel.prototype.getMarkerPoint = function(){
-	
-	var
-		map = this.map.google.map,
-		topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast()),
-	    bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest()),
-	    scale = Math.pow(2,map.getZoom()),
-	    worldPoint = map.getProjection().fromLatLngToPoint(this.place.marker.getPosition());
-	 return new google.maps.Point((worldPoint.x - bottomLeft.x)*scale,(worldPoint.y-topRight.y)*scale); 
-};

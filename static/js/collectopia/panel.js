@@ -27,16 +27,17 @@ collectopia.Panel = function(type, title, actions, parent) {
 	// Create window DOM	
 	this.dom_parent = (parent == undefined)?$('#content'):parent;
 	this.dom = $('<div class="panel"/>').append(
-			inner_div = $('<div><span class="title">' + title + '</span>' +
-			'<span class="close">close</span>' +
-				'</div>')
-		)
+		'<div><span class="title">' + title + '</span>' +
+		'<span class="close">close</span>' +
+		'<div class="container" /></div>'
+	)
 		.append($('<ul class="actions"></ul>'))
 		.addClass(type)
 		.hide();
-	this.dom.data('panel', this);
+	this.dom_body = this.dom.find('.container');
+	this.dom.data('panel', this);	
 	if (template.length > 0)
-		inner_div.append(template.clone());
+		this.dom_body.append(template.clone());
 	this.dom_parent.append(this.dom);
 	this.title = title;
 	
@@ -54,7 +55,11 @@ collectopia.Panel = function(type, title, actions, parent) {
 	this.dom.mousedown(function(event){
 		pthis.bringToFront();
 	});
-	this.dom.draggable({ handle : '.title', cursor: 'crosshair'});
+	this.dom.draggable({
+		cancel : '.container, .close, .actions',
+		cursor: 'crosshair'		
+	});
+	
 	this.dom.find('.close').click(function(){
 		pthis.close();
 	});
@@ -139,7 +144,7 @@ collectopia.Panel.prototype.move = function(left, top) {
 /**
  * Move the panel near something?
  */
-collectopia.Panel.prototype.move_near = function(left, top, width, height) {
+collectopia.Panel.prototype.moveNear = function(left, top, width, height) {
 	var view_size = collectopia.panels.size();
 	var panel_size = this.size();
 	var dest_point = { left: left + width, top: top };
@@ -148,7 +153,6 @@ collectopia.Panel.prototype.move_near = function(left, top, width, height) {
 	if (((left + width + panel_size.width) > view_size.width) && (left > panel_size.width))
 		dest_point.left = left - panel_size.width;
 	
-	console.log(left, top, panel_size, view_size);
 	if ((top + panel_size.height) > view_size.height)
 		dest_point.top = view_size.height - panel_size.height; 
 	

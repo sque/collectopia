@@ -75,7 +75,7 @@ collectopia.Map = function(dom, categories) {
 
 		// Fetch needed panels
 		$.get('api/place/new', function(data){
-			$('#panels').html($('#panels').html() + data);
+			$('#panels').html($('#panels').html() + data );
 		});
 	};
 	
@@ -217,4 +217,17 @@ collectopia.Map.prototype.showPlace = function(place_id) {
 		return;
 	this.google.map.panTo(new google.maps.LatLng(place.loc_lat, place.loc_lng));
 	this.google.map.setZoom(10);
+};
+
+/**
+ * Extend google.Marker to suport querying for xy point on the projection (window).
+ * @returns {google.maps.Point}
+ */
+google.maps.Marker.prototype.getPoint = function(){
+	var
+		topRight = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getNorthEast()),
+	    bottomLeft = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getSouthWest()),
+	    scale = Math.pow(2, this.map.getZoom()),
+	    worldPoint = this.map.getProjection().fromLatLngToPoint(this.getPosition());
+	 return new google.maps.Point((worldPoint.x - bottomLeft.x)*scale,(worldPoint.y-topRight.y)*scale); 
 };

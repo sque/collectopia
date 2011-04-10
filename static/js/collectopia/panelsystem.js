@@ -36,9 +36,27 @@ collectopia.PanelSystem = function() {
 					panel.dom.css({'box-shadow' : ''});
 				}
 			}
-			
+		},
+		status : {
+			enabledKeyboardEvents : true
 		}
 	};
+	
+	// Hot keys system
+	$(document).bind('keydown', function(e){
+		if (e.keyCode == 27 && pthis._private_.status.enabledKeyboardEvents) {
+			var f = pthis.focused();
+			if (f)
+				f.close();
+		}
+	});
+};
+
+/**
+ * Keyboard input events
+ */
+collectopia.PanelSystem.prototype.enableKeyboardEvents = function (flag) {
+	this._private_.status.enabledKeyboardEvents = Boolean(flag);
 };
 
 /**

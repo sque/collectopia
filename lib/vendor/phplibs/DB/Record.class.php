@@ -80,7 +80,7 @@ class DB_Record
 	/**
 	 * Get a raw query object for this model, whose results will
 	 * be in the form of raw data structured in arrays.
-	 * @return @b DB_ModelQuery instance for the model of 
+	 * @return DB_ModelQuery instance for the model of 
 	 * this class.
      */
 	static public function raw_query($model_name = NULL)

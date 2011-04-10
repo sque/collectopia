@@ -48,15 +48,16 @@ class Layout_Default extends Layout
     
     protected function __init_layout()
     {   
-
-    	
         $this->activate();
         $doc = $this->get_document();    
         $this->get_document()->title = Registry::get('site.title');
         $this->get_document()->add_ref_css(surl('/static/css/default.css'));
         $this->get_document()->add_ref_css(surl('/static/css/ui-lightness/jquery-ui.css'));
+        $this->get_document()->add_ref_css(surl('/static/fileupload/jquery.fileupload-ui.css'));
         $this->get_document()->add_ref_js(surl('/static/js/jquery-1.4.4.min.js'));
         $this->get_document()->add_ref_js(surl('/static/js/jquery-ui-1.8.6.custom.min.js'));
+		$this->get_document()->add_ref_js(surl('/static/fileupload/jquery.fileupload.js'));
+		$this->get_document()->add_ref_js(surl('/static/fileupload/jquery.fileupload-ui.js'));
         $this->get_document()->add_ref_js(surl('/static/js/jquery-createEl.js'));        
         $this->get_document()->add_ref_js(surl('/static/js/core.js'));
         $this->get_document()->add_ref_js('http://maps.google.com/maps/api/js?sensor=false');
@@ -66,6 +67,16 @@ class Layout_Default extends Layout
         $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/createplace.js'));
         $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/info.js'));
         
+        // Jquery cycle
+        $this->get_document()->add_ref_js(surl('/static/jcycle/jquery.cycle.all.min.js'));
+        
+        // Jquery Fancy
+        $this->get_document()->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
+        
+        $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.easing-1.3.pack.js'));
+        $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.mousewheel-3.0.4.pack.js'));        
+        $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.fancybox-1.3.4.pack.js'));
+       
     	// Extra css
     	$style = '';
     	foreach($categories = Category::open_all_to_array() as $cat)
@@ -75,7 +86,6 @@ class Layout_Default extends Layout
 	    	";
     	$doc->get_head()->append(tag('style', $style));
         
-        $frm = new UI_PlaceNewForm();
         etag('div id="wrapper"')->push_parent();
         etag('div id="map-canvas"');
         $def_content = etag('div id="content');
