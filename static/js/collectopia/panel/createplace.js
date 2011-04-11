@@ -62,29 +62,33 @@ collectopia.CreatePlacePanel = function(map, geocoder) {
 	this.events.bind('onclose', function(){
 		pthis.marker.setMap(null);
 	});	
-	this.events.bind('submit', function(event, place){
-		var indiv = pthis.dom.children('div');
-		var initial_size = {h: indiv.height(), w: indiv.width() };
-		// Reshape form
-		pthis.dom.children('div').text('<h1>PLACE HOLDER[THANK YOU]</h1>');
-		pthis.dom.children('ul').remove();
-		indiv.height(initial_size.h);
-		indiv.width(initial_size.w);
-		map.places.push(place);
-		map.drawPlaces();
+	this.events.bind('submit', function(event, data){		
+		if (data.status == 'start') {
+			pthis.disable('<div class="loading" />');
+		} else { pthis.enable(); }
 		
-		// Fade out
-		pthis.marker.setMap(null);
-		pthis.dom.delay(1500).fadeOut('slow', function(){	pthis.close(); });
-	});
-	this.events.bind('submit_error', function(event, data){
-		var indiv = pthis.dom.children('div');
-		indiv.find('.ui-form-error').remove();
-		
-		for(var name in data.fields)
-			indiv.find('li[name=' + name + ']')
-				.createEl('span' , {class : 'ui-form-error'}).text(data.fields[name]);
-	});
+		if (data.status == 'finish') {
+			var place = data.response;
+			var initial_size = {h: pthis.dom_body.height(), w: pthis.dom_body.width() };
+			// Reshape form
+			pthis.dom_body.html('<div class="submitted">' +
+				'<h1>Your place has been successfully submitted.</h1></div>');
+			pthis.dom.children('ul').remove();
+			pthis.dom_body.height(initial_size.h);
+			pthis.dom_body.width(initial_size.w);
+			map.places[place.id] = place;
+			map.drawPlaces();
+			
+			// Fade out
+			pthis.marker.setMap(null);
+			pthis.dom.delay(1500).fadeOut('slow', function(){	pthis.close(); });
+		} else if (data.status == 'error') {			
+			pthis.dom_body.find('.ui-form-error').remove();			
+			for(var name in data.response.fields)
+				pthis.dom_body.find('li[name=' + name + ']')
+					.createEl('span' , {class : 'ui-form-error'}).text(data.response.fields[name]);
+		}
+	});	
 
 	/* Listen on marker "position_changed" and update location on creation form */
 	google.maps.event.addListener(this.marker, 'dragend', marker_moved_action = function() {
@@ -109,7 +113,7 @@ collectopia.CreatePlacePanel = function(map, geocoder) {
 			'<div><table class="photos-grid"/></div></td></tr></table>');	
 	this.dom.find('table td:first-child').append('<form method="post" class="photos-upload" action="api/photo/new">' +
 			'<input name="image" type="file" multiple>' +
-			'<button>Upload</button><div>Upload photos</div></form>');
+			'<button>Upload</button><div>Upload photos<em>maximum size 2MB</em></div></form>');
 	
 	var get_current_photos = function() {
     	var form_photos = pthis.dom.find('input[name=photos]');
@@ -125,23 +129,34 @@ collectopia.CreatePlacePanel = function(map, geocoder) {
         uploadTable: this.dom.find('.photos-grid'),
         downloadTable: this.dom.find('.photos-grid'),
         buildUploadRow: function (files, index) {
-            return $('<tr class="upload"><td colspan="2" class="fname"><div>' + files[index].name + '</div>' + 
+            var a = $('<tr class="upload"><td colspan="2" class="fname"><div />' + 
                     '<div class="file_upload_progress"><div /></div></td>' +
                     '<td class="file_upload_cancel delete">' +
                     '<button class="ui-state-default ui-corner-all" title="Cancel">' +
                     '<span class="ui-icon ui-icon-cancel">Cancel</span>' +
                     '</button></td></tr>');
+            a.find('.fname > div:first-child').text(files[index].name);
+            return a;
         },
         buildDownloadRow: function (file) {
+        	if (collectopia.is_defined(file.error)) {
+        		var a = $('<tr class="upload">' +
+        				'<td colspan="3" class="fname"><div/>' +
+        				'<div class="ui-form-error">' + file['error'] + '</div></td></tr>');
+        		a.find('.fname > div:first-child').text(file['name']);
+        		setTimeout(function(){ a.hide('fast', function(){ a.remove(); }); }, 8000);
+        		return a;
+        	}
         	var current_photos = get_current_photos();
         	current_photos.push(file.key);
         	set_current_photos(current_photos);
         	
-            var a = $('<tr><td class="image"><img></td><td class="fname"><div>' + file.name + '</div></td>' +
+            var a = $('<tr><td class="image"><img></td><td class="fname"><div/></td>' +
             		'<td class="delete">' +
             		'<button class="ui-state-default ui-corner-all" title="Delete">' +
             		'<span class="ui-icon ui-icon-trash">Delete</span></button>' +
             		'</td></tr>');
+            a.find('.fname div').text(file.name);
             a.find('img').attr('src', file.thumb);
             a.find('button').data('key', file.key).click(function(event){
             	a.hide('fast', function(){ a.remove(); }); 
@@ -156,9 +171,14 @@ collectopia.CreatePlacePanel = function(map, geocoder) {
         },
         initUpload : function (event, files, index, xhr, handler, callBack) {
         	pthis.dom.addClass('show-uploads').animate({ width : 542 });
+          
+            // Chain processing
         	handler.initUploadRow(event, files, index, xhr, handler, function () {        		
         		callBack();
         	});
+        },
+        beforeSend: function (event, files, index, xhr, handler, callBack) {
+
         }
     });
 };

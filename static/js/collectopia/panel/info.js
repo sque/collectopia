@@ -72,15 +72,19 @@ collectopia.InfoPanel = function(map, place) {
 			.append(' votes)');
 		
 	inner_div.createEl('hr');
+	var media_div = inner_div.createEl('div', { class : 'media'});
+	var video_present = ((typeof place.video_url != 'undefined') && ( place.video_url != ''));
+	var photos_present = (typeof place.photos != 'undefined');
+	var media_present = video_present || photos_present;
 	
 	// Photos
-	if (typeof place.photos != 'undefined') {
-		var cont = inner_div.createEl('div', { class : 'photos'});
+	if (photos_present) {
+		var cont = media_div.createEl('div', { class : 'photos'});
 		var gal = cont.createEl('div', {class : 'gallery'});
 		for(var i in place.photos)
 			gal.createEl('a', { rel : 'photos_place_' + this.place.id, 'href' : place.photos[i]['url'], target: '_blank'})
 				.createEl('img', { src : place.photos[i]['thumb_url']});
-		gal.after('<div class="pager" id="photos_nav_' + String(this.place.id) + '" >')
+		gal.after('<div class="pager" id="photos_nav_' + escape(String(this.place.id)) + '" >')
 			.cycle({ 
 		    fx:     'scrollLeft', 
 		    timeout: 5000,
@@ -96,12 +100,53 @@ collectopia.InfoPanel = function(map, place) {
 			'overlayShow'	:	false,
 			'onStart' : function(){
 				collectopia.panels.enableKeyboardEvents(false);
+				gal.cycle('pause');
+			},
+			'onClosed' : function(){
+				collectopia.panels.enableKeyboardEvents(true);
+				gal.cycle('resume');
+			}
+		});
+	} else if (media_present) {
+		media_div.createEl('div', { class : 'photos empty' })
+			.createEl('img', { src : 'static/css/images/no_photos.jpg'});
+	}
+	
+	// Video
+	if (video_present){
+		var video = place.video_url.split(':'),
+			img_url;
+		if (video[0] == 'youtube') {
+			img_url = 'http://img.youtube.com/vi/' + video[1] + '/1.jpg';
+			swf_url = 'http://www.youtube-nocookie.com/v/' + video[1] + '?autoplay=1&fs=1';
+		}
+		
+		// Create elements
+		var v = media_div.createEl('div', { class : 'video ' + video[0] })
+			.createEl('a', { href : swf_url });		
+		v.createEl('img', { src : img_url });
+		v.createEl('div', { class: 'watermark'});
+		
+		media_div.find(".video a").fancybox({
+	        'titleShow'     : false,
+	        'transitionIn'  : 'elastic',
+	        'transitionOut' : 'elastic',
+	        'type' : 'swf',
+	        'swf' : {'wmode':'transparent','allowfullscreen':'true'},
+			'onStart' : function(){
+				collectopia.panels.enableKeyboardEvents(false);
 			},
 			'onClosed' : function(){
 				collectopia.panels.enableKeyboardEvents(true);
 			}
 		});
+	} else if (media_present){
+		media_div.createEl('div', { class : 'video empty' })
+			.createEl('img', { src : 'static/css/images/no_video.jpg'});
 	}
+	
+	media_div.createEl('div', { class: 'spacer', style : 'clear: both;' });
+
 	
 	// Description
 	inner_div.createEl('div', { class : 'description'})
@@ -126,7 +171,6 @@ collectopia.InfoPanel = function(map, place) {
 	
 	// Capture events
 	this.events.bind('closed',function(){
-		
 		delete place.infopanel;	// Remove info panel
 		downlight_marker();
 	});

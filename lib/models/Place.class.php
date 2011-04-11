@@ -41,6 +41,7 @@ class Place extends DB_Record
 	    'email' ,
 	    'web' ,
 	    'tel' ,
+		'video_url',
 	    'description' ,
 	  	'rate_current',
 	  	'rate_total',

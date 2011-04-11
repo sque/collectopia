@@ -59,7 +59,8 @@ collectopia.Map = function(dom, categories) {
 			center : myLatlng,
 			mapTypeId : google.maps.MapTypeId.ROADMAP,
 			disableDefaultUI : true,
-			streetViewControl : false
+			streetViewControl : false,
+			keyboardShortcuts: true
 		};
 	
 		this.google.map = new google.maps.Map(

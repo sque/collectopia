@@ -10,6 +10,7 @@ class UI_PlaceNewForm extends Output_HTML_Form
 			'email' => array('display' => 'E-mail'),
         	'web' => array('display' => 'Website'),
         	'tel' => array('display' => 'Phone'),
+        	'video' => array('display' => 'Video URL', 'hint' => 'Give a vimeo or youtube url with the video you want.'),
 			'description' => array('display' => 'Description', 'type' => 'textarea',
         		'regcheck' => '/^.{10,}/', 'onerror' => 'Give a description of the place.'),
         	'photos' => array('type' => 'hidden', 'value' => ''),        	
@@ -37,6 +38,16 @@ class UI_PlaceNewForm extends Output_HTML_Form
 		header('Content-type: application/json');
     	$this->hide();    	
     	
+        if (!empty($this->fields['video']['value'])) {
+    		if (preg_match_all('#https?://.+\.youtube\.com/((watch.*?v=)|v/)(?P<url>[\w\-]+)#',
+    			$this->fields['video']['value'], $matches)) {
+    				// Valid Youtube video
+    				$this->fields['video']['value'] = 'youtube:' . $matches['url'][0];
+    		} else {
+    			$this->invalidate_field('video', 'Cannot recognize this video url!');
+    		}
+    	}
+    	
     	if(!$this->is_valid()) {
     			$error_fields = array();
     		foreach($this->fields as $name => $field) {
@@ -48,8 +59,13 @@ class UI_PlaceNewForm extends Output_HTML_Form
     			if (in_array($name, array('loc_lat', 'loc_lng')))
     				$error_fields['address'] = 'This is not a valid address.';
     		}
-    		echo json_encode(array('error' => 'There where errors in form!', 'fields' => $error_fields));
+    		echo json_encode(array(
+    			'error' => 'There where errors in form!',
+    			'fields' => $error_fields)
+    		);
+    		return ;
     	}
+    	
     }
     
     public function on_valid($values)
@@ -70,10 +86,10 @@ class UI_PlaceNewForm extends Output_HTML_Form
     		'address' => $values['pos_address'],
     		'email' => $values['email'],
     		'web' => $values['web'],
+    		'video_url' => $values['video']
     	));
     	    	
-    	if (! $place ) {
-    	
+    	if (! $place ) {    	
     		echo json_encode(array('error' => 'Cannot create this place'));
     		return;
     	}

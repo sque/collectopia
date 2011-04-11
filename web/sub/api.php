@@ -77,6 +77,7 @@ function data_default(){
 }
 
 function place_new(){
+	sleep(1.5);
 	Layout::open('default')->deactivate();
 	$frm = new UI_PlaceNewForm();
 	echo $frm->render();
@@ -165,10 +166,30 @@ function search(){
 }
 
 function photo_new() {
+	header('Content-type: application/json');
+	
 	if ((!isset($_FILES['image'])) || ($_FILES['image']['error'] != 0))
 		return;
-
-	$img = new Image($_FILES['image']['tmp_name']);
+		
+	// Extension check
+	$ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+	if (!in_array($ext, array('jpg', 'png', 'gif'))) {
+		echo json_encode(array(
+			'error' => 'Non supported file type.',
+			'name' => $_FILES['image']['name']
+		));
+		return;
+	}
+	try {
+		$img = @new Image($_FILES['image']['tmp_name']);
+	} catch(Exception $e) {
+		echo json_encode(array(
+			'error' => 'Error reading image.',
+			'name' => $_FILES['image']['name']
+		));
+		return;
+	}
+	
 	$img_data = $img->data(array('format' => IMAGETYPE_JPEG, 'quality' => 93));
 	$data_hash = md5($img_data);
 
@@ -183,7 +204,7 @@ function photo_new() {
 	// Clean up expired photos
 	TmpPhoto::cleanUpExpired();
 	
-	header('Content-type: application/json');
+	
 	echo json_encode(array(
 		'name' => $tmp_photo->name,
 		'key' => $tmp_photo->key,

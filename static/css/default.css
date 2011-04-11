@@ -13,6 +13,15 @@ body {
 	overflow: hidden;
 }
 
+input, textarea{
+	border: 1px solid #9a9a9a;
+	border-radius: 3px;
+}
+
+input:focus, textarea:focus {
+	box-shadow: inset 0px 0px 3px #d08f2a;
+	border: 1px solid #d08f2a;
+}
 
 /* Container */
 div#content {
@@ -84,7 +93,7 @@ div#content {
 
 .panel {
 	padding: 11px;
-	background-color: #dedede;	
+	background-color: #EFEFEF;	
 	position: absolute;
 	left: 300px;
 	top: 250px;
@@ -97,12 +106,41 @@ div#content {
 	width: 340px;
 }
 
+.panel.active {
+	background-color: #dedede;	
+	position: absolute;
+	box-shadow: 0px 0px 10px 0px #ff0099;
+	-webkit-box-shadow: 0px 0px 10px 0px #ff0099;
+	-moz-box-shadow: 0px 0px 10px 0px #ff0099;
+	background-color: #D1D1D1;
+}
+
 .panel > div{
-	background-color: white;
-	padding: 5px;
+	background-color: white;	
 	border: 2px solid #cccccc;	
 	font-size: 8pt;
 }
+
+.panel .container{
+	position: relative;
+	padding: 5px;
+}
+
+.panel .disable_frame{
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	background-color: #dedede;
+	opacity: 0.9;
+	z-index: 1000;
+}
+
+.panel.disabled .title, .panel.disabled .close, .panel.disabled .actions {
+	display: none;
+}
+
 .panel .close{
 	position: absolute;
 	right: -6px;
@@ -187,6 +225,20 @@ div#content {
 
 
 /** CreatePanel **/
+.panel.place-new .loading {
+	height: 100%;
+	line-height: 100%;	
+	background: white url('images/loading.gif') no-repeat center center;	
+}
+
+.panel.place-new .submitted h1{
+	margin: 150px auto 0px auto;
+	width: 200px;
+	padding-bottom: 230px;
+	text-align: center;
+	background: white url('images/check_mark.jpg') no-repeat center center;
+}
+
 .panel.place-new form {
 	padding: 0px;
 	margin: 0px;
@@ -322,8 +374,8 @@ div#content {
 	margin: 0px; padding: 0px;
 	list-style-type: none;
 	position: absolute;
-	top: 15px;
-	right: 30px;
+	top: 7px;
+	right: 12px;
 }
 
 .panel.info ul.categories li{
@@ -331,11 +383,12 @@ div#content {
 	margin-left: 5px;
 }
 
+
 .panel .photos {
+	left: 0px;
 	width: 160px;
 	text-align: center;
-	margin-right: 10px;
-	margin-bottom: 5px;
+	float: left;
 }
 .panel .photos .gallery a{
 	display: block;
@@ -358,8 +411,8 @@ div#content {
 .panel .photos .pager a{
 	display: inline-block;
 	background: transparent url('images/pager-dot.png') no-repeat center center;
-	width: 16px;
-	height: 16px;
+	width: 8px;
+	height: 8px;
 }
 
 .panel .photos .pager a.activeSlide{
@@ -367,6 +420,24 @@ div#content {
 }
 
 
+.panel .video{
+	margin: 15px 15px 15px 0px;		
+	float: right;
+}
+
+.panel .video a{
+	position: relative;
+	display: inline-block;
+}
+
+.panel .video a .watermark{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	background: transparent url('images/play-button-icon.png') no-repeat center center;
+}
 /** search **/
 .widget.search ul.results {
 	margin: 0px;

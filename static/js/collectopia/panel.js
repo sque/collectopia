@@ -11,12 +11,13 @@ collectopia.namespace('collectopia');
  * 
  * @par Events
  * 
- * - 'submit'	Called when form has been submitted succesfully
- * - 'submit_error'	Called on error submit a form.
+ * - 'submit' Event related with submit status update.
  * - 'onclose' When close has been requested.
  * - 'closed' When the close operation and effects has finished. 
  * - 'focus' when this panel is brought to the foreground.
  * - 'blur' when this panel looses foreground.
+ * - 'disabled' when this panel is disabled.
+ * - 'enabled' when this panel is enabled.
  */
 collectopia.Panel = function(type, title, actions, parent) {
 	var pthis = this,
@@ -27,11 +28,12 @@ collectopia.Panel = function(type, title, actions, parent) {
 	// Create window DOM	
 	this.dom_parent = (parent == undefined)?$('#content'):parent;
 	this.dom = $('<div class="panel"/>').append(
-		'<div><span class="title">' + title + '</span>' +
+		'<div><span class="title" />' +
 		'<span class="close">close</span>' +
 		'<div class="container" /></div>'
-	)
-		.append($('<ul class="actions"></ul>'))
+	);
+	this.dom.find('.title').text(title);
+	this.dom.append($('<ul class="actions"></ul>'))
 		.addClass(type)
 		.hide();
 	this.dom_body = this.dom.find('.container');
@@ -40,6 +42,7 @@ collectopia.Panel = function(type, title, actions, parent) {
 		this.dom_body.append(template.clone());
 	this.dom_parent.append(this.dom);
 	this.title = title;
+	this.enabled = true;
 	
 	// Add support for events
 	this.events = $(this);
@@ -70,6 +73,7 @@ collectopia.Panel = function(type, title, actions, parent) {
 	// Panel is ready, lets show it.
 	this.dom.fadeIn('slow');
 };
+
 /**
  * Add an action to the panel
  */
@@ -77,6 +81,7 @@ collectopia.Panel.prototype.addAction = function(title, callback) {
 	var ul = this.dom.find('ul.actions');
 	ul.append($('<li/>').append($('<a href="#"/>').text(title).click(callback)));
 };
+
 /**
  * Request to close this panel.
  */
@@ -111,12 +116,13 @@ collectopia.Panel.prototype.submitForm = function(selector) {
 		return;	// No form in panel
 	
 	var form_data = form.serialize();
+	pthis.events.triggerHandler('submit', { status: 'start', data : form_data });
 	$.post(form.attr('action'), form_data, function(data){
 		if ((data != null) && (typeof(data['error']) != 'undefined')) {
-			pthis.events.triggerHandler('submit_error', data);
+			pthis.events.triggerHandler('submit', { status: 'error', response : data});
 			return;
 		}
-		pthis.events.triggerHandler('submit', data);
+		pthis.events.triggerHandler('submit', { status: 'finish', response : data });
 	});
 };
 
@@ -157,4 +163,28 @@ collectopia.Panel.prototype.moveNear = function(left, top, width, height) {
 		dest_point.top = view_size.height - panel_size.height; 
 	
 	this.move(dest_point.left, dest_point.top);
+};
+
+/**
+ * Disable this panel
+ */
+collectopia.Panel.prototype.disable = function(html) {
+	if (!this.enabled)
+		return;
+	this.dom.addClass('disabled');
+	this.dom_body.createEl('div', { class : 'disable_frame'}).html(html);	
+	this.enabled = false;
+	this.events.triggerHandler('disabled', { panel : this});
+};
+
+/**
+ * Enable this panel
+ */
+collectopia.Panel.prototype.enable = function(html) {
+	if (this.enabled)
+		return;
+	this.dom.removeClass('disabled');
+	this.dom_body.find('.disable_frame').remove();
+	this.enabled = true;
+	this.events.triggerHandler('enabled', { panel : this});
 };

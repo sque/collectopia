@@ -30,10 +30,10 @@ collectopia.PanelSystem = function() {
 			for(var i in pthis.zorder) {
 				var panel = pthis.all_panels[pthis.zorder[i]]; 
 				panel.dom.css('z-index', 10 + i);
-				if (i == pthis.zorder.length - 1) {
-					panel.dom.css({'box-shadow' : '0px 0px 10px 0px #880000'});
+				if (i == pthis.zorder.length - 1) {					
+					panel.dom.addClass('active');
 				} else {
-					panel.dom.css({'box-shadow' : ''});
+					panel.dom.removeClass('active');
 				}
 			}
 		},
@@ -44,10 +44,19 @@ collectopia.PanelSystem = function() {
 	
 	// Hot keys system
 	$(document).bind('keydown', function(e){
-		if (e.keyCode == 27 && pthis._private_.status.enabledKeyboardEvents) {
-			var f = pthis.focused();
-			if (f)
-				f.close();
+		if (pthis._private_.status.enabledKeyboardEvents) {
+			switch (e.keyCode){
+			case 27:
+				var f = pthis.focused();
+				if (f)
+					f.close();
+				break;
+			case 32:
+				if ($(':focus').length == 0)
+					pthis.toggleExpose();
+				break;
+			}
+			
 		}
 	});
 };
@@ -127,7 +136,7 @@ collectopia.PanelSystem.prototype.bringToFront= function(panel_id) {
 	if (zpos == this.zorder.length - 1)
 		return; // Already panel to foreground
 	
-	// Blur actual infront panel
+	// Blur actual focused panel
 	infront = this.focused();
 	infront.events.triggerHandler('blur', { panel: infront});
 	
@@ -149,23 +158,24 @@ collectopia.PanelSystem.prototype.switchExposeOn = function() {
 		return;	// Already enabled
 	
 	// Save state
-	this.expose_mode.enabled = true;
-	this.expose_mode.stored_state.positions = {};
+	this.expose_mode.enabled = true;	
 	
 	var system_size = this.size();
 	for(var id in this.all_panels) {
 		var p = this.all_panels[id].dom;
 		
 		// Save state
-		this.expose_mode.stored_state.positions[id] = {
-			left : p.offset().left
-		};
+		if (! collectopia.is_defined(this.expose_mode.stored_state.positions[id])) {
+			this.expose_mode.stored_state.positions[id] = {
+				left : p.offset().left
+			};
+		}
 		
 		// Animate to the borders
 		if ((p.width() / 2 + p.offset().left ) > system_size.width /2)
-			p.animate({ left : system_size.width});
+			p.stop().animate({ left : system_size.width});
 		else
-			p.animate({ left : - (p.width() + 30)});
+			p.stop().animate({ left : - (p.width() + 30)});
 	}
 	
 	// Send blur event on current focus
@@ -183,9 +193,20 @@ collectopia.PanelSystem.prototype.switchExposeOff = function() {
 	if (! this.expose_mode.enabled)
 		return;	// Already enabled
 	
+	// Loop around all stored states
 	for(var id in this.expose_mode.stored_state.positions) {
-		var p = this.all_panels[id].dom;
-		p.animate({ left : this.expose_mode.stored_state.positions[id].left});		
+		if (! collectopia.is_defined(this.all_panels[id])) {
+			// This panel is lost
+			delete this.expose_mode.stored_state.positions[id];
+			continue;
+		}
+		var p = this.all_panels[id].dom,
+			pthis = this;
+		
+		p.stop().animate({ left : this.expose_mode.stored_state.positions[id].left}, function(){
+			var p = $(this).data('panel');
+			delete pthis.expose_mode.stored_state.positions[p.id];
+		});		
 	}
 	
 	this.expose_mode.enabled = false;

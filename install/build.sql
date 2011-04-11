@@ -47,6 +47,7 @@ CREATE TABLE `places` (
 	`address` varchar(200) not null,
 	`email` varchar(80) not null,
 	`web` varchar(255) not null,
+	`video_url` varchar(255) not null,
 	`tel` varchar(20) not null,
 	`description` TEXT not null,
 	`rate_current` FLOAT not null,
