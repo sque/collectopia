@@ -137,7 +137,7 @@ class Place extends DB_Record
 		
 		$normal_x = 48; $normal_step = 9;
 		$focus_x = 96; $focus_step = 16;
-		foreach($this->categories->all() as $cat) {
+		foreach(array_reverse($this->categories->all()) as $cat) {
 			$color = color_hex_to_dec($cat->color);
 			$color = imagecolorexact($normal->gd_handle(), $color[0], $color[1], $color[2]);
 			

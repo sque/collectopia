@@ -65,7 +65,7 @@ collectopia.Map = function(dom, categories) {
 		this.google.map = new google.maps.Map(
 			document.getElementById("map-canvas"), this.google.mapOptions);
 		google.maps.event.addListener(this.google.map, 'idle', function(bounds) {
-			pthis.drawPlaces();
+			//pthis.drawPlaces();
 		});
 		this.google.geocoder = new google.maps.Geocoder();
 	};
@@ -170,6 +170,7 @@ collectopia.Map = function(dom, categories) {
 
 
 collectopia.Map.prototype.drawPlaces = function() {
+	console.log('drawing places');
 	for(var i in this.places){
 		var place = this.places[i];
 		

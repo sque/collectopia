@@ -265,11 +265,15 @@ div#content {
 }
 
 .panel.info ul.categories{
-	margin: 0px; padding: 0px;
+	margin: 0px;
+	padding: 3px 3px 0px 0px;
 	list-style-type: none;
 	position: absolute;
-	top: 7px;
-	right: 12px;
+    right: 25px;
+    top: -32px;
+    border: 2px solid #dedede;
+    border-bottom: none;
+    background-color: white;
 }
 
 .panel.info ul.categories li{
@@ -505,22 +509,21 @@ ul.rating.selected li{
 	border-spacing: 0px;
 }
 
-.place-editor table td.right-row {
-	width: 0px;
-	vertical-align: bottom;
-}
-
 .place-editor.show-uploads table td.right-row {	
 	border-left: 1px solid #9a9a9a;	
 	padding: 0px;
 	width: 200px;
 	height: 100%;
+	vertical-align: bottom;
 }
 
 .place-editor.show-uploads table td.right-row > div{
-	width: 200px;
-	height: 100%;
+	width: 200px;	
 	overflow: auto;
+	position: absolute;
+	top: 5px;
+	bottom: 5px;
+	right: 3px;
 }
 	
 

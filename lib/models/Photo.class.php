@@ -42,8 +42,6 @@ class Photo extends DB_Record
 		$q = Photo::open_query()
 			->where('place_id IS NULL')
 			->where('secret = ?');
-		error_log($q->sql());
-		error_log($secret);
 		$photos = $q->execute($secret);
 		
 		if (count($photos) != 1)
@@ -148,7 +146,6 @@ class Photo extends DB_Record
 	 */
 	public static function clean_up_expired() {
 		$d = DB_Conn::execute_fetch_all('photo-cleanup-expired', array(Registry::get('photos.tmp.max-life')));
-		error_log(var_export($d, true)); 
 	}
 	
 	/**

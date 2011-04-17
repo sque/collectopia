@@ -44,6 +44,16 @@ collectopia = {
 	},	
 	
 	/**
+	 * Check if this variable is array
+	 * 
+	 * @param t The variable to check
+	 * @return boolean
+	 */
+	isArray : function(t) {
+		return jQuery.isArray(t);
+	},	
+	
+	/**
 	 * Check if this variable is a function
 	 * 
 	 * @param t The variable to check
@@ -161,7 +171,7 @@ collectopia.api.Form.prototype.submit = function(data, on_success, on_error) {
 	var form = this;
 	this.object.clone().update(data)[this.submit_action](
 		function(object){
-			form.object.update(object.data());
+			form.object.update(object.getData(), object.getOptions());
 			if (collectopia.isFunction(on_success))
 				on_success.call(form, form);
 		}, 
@@ -177,14 +187,12 @@ collectopia.api.Form.prototype.submit = function(data, on_success, on_error) {
 
 /**
  * This class reflects the availabe API for places.
+ * @param data Is an object with all data of this place
+ * @param options Acceptable options are
+ *  - skip_marker_cache The marker images from this place will be created with skip_cache flag
  */
-collectopia.api.Place = function(data) {
-	jQuery.extend(this, data, {});	// Save data and default values
-	
-	// map photo data to object
-	if (collectopia.isObject(this.photos))
-		this.photos = this.photos.map(
-			function(data){ return new collectopia.api.Photo(data); });
+collectopia.api.Place = function(data, options) {
+	this.update(data, options);	
 };
 
 /**
@@ -192,21 +200,31 @@ collectopia.api.Place = function(data) {
  * @returns {Object} All data of place serialized in url encoded format
  */
 collectopia.api.Place.prototype.serialize = function() {
-	return jQuery.param(this.data());
+	return jQuery.param(this.getData());
 };
 
 /**
  * Get all data of this place.
  * @returns {Object}
  */
-collectopia.api.Place.prototype.data = function() {
+collectopia.api.Place.prototype.getData = function() {
 	data = {};
 	for(var i in this) {
 		if (collectopia.isFunction(this[i]))
 			continue;
+		if (i == 'options')
+			continue;
 		data[i] = this[i];
 	}	   
-	return data;
+	return jQuery.extend(true, {}, data);
+};
+
+/**
+ * Get the options of this place
+ * @returns {Object}
+ */
+collectopia.api.Place.prototype.getOptions = function() {
+	return jQuery.extend(true, {}, this.options);
 };
 
 /**
@@ -214,14 +232,24 @@ collectopia.api.Place.prototype.data = function() {
  * @returns {collectopia.api.Place}
  */
 collectopia.api.Place.prototype.clone = function() {
-	return new collectopia.api.Place(this.data());
+	return new collectopia.api.Place(this.getData(), this.getOptions());
 };
 
 /**
  * Update this object with new data
  */
-collectopia.api.Place.prototype.update = function(data) {
-	jQuery.extend(this, data);
+collectopia.api.Place.prototype.update = function(data, options) {
+	var old_options = this.options;	// << GUARD Options
+	jQuery.extend(this, data, {});	// Save data and default values
+	this.options = old_options;		// >>
+	
+	// map photo data to object
+	if (collectopia.isObject(this.photos))
+		this.photos = this.photos.map(
+			function(data){ return new collectopia.api.Photo(data); });
+	
+	// Update also options
+	this.options = jQuery.extend({'skip_marker_cache': false}, this.options, options);
 	return this;
 };
 
@@ -261,9 +289,10 @@ collectopia.api.Place.prototype.reqCreate = function(on_success, on_error) {
 	jQuery.ajax({
 	  type: 'POST',
 	  url: collectopia.api.furl('/api/place/+new'),
-	  data: this.data(),
+	  data: this.getData(),
 	  success: function(reply){
-		  place._process_reply_place(reply, on_success, on_error);		  
+		  place.options['skip_marker_cache'] = true;
+		  place._process_reply_place(reply, on_success, on_error);
 	  },
 	  error: function(jqXHR, textStatus){
 		  place._process_fail(textStatus, on_error);		  
@@ -282,7 +311,8 @@ collectopia.api.Place.prototype.reqCreate = function(on_success, on_error) {
 collectopia.api.Place.prototype.reqCreateForm = function(on_success, on_error) {
 	// Check cache
 	if (collectopia.isDefined(collectopia.api.Place._cache_reqCreateForm_data)) {
-		on_success.call(place, new collectopia.api.Form(collectopia.api.Place._cache_reqCreateForm_data, place));
+		on_success.call(this,
+			new collectopia.api.Form(collectopia.api.Place._cache_reqCreateForm_data, this, 'reqCreate'));
 		return;
 	}
 	
@@ -316,8 +346,9 @@ collectopia.api.Place.prototype.reqUpdate = function(on_success, on_error) {
 	jQuery.ajax({
 	  type: 'POST',
 	  url: collectopia.api.furl('/api/place/@' + escape(this.id) + '/+edit'),
-	  data: this.data(),
+	  data: this.getData(),
 	  success: function(reply){
+		  place.options['skip_marker_cache'] = true;
 		  place._process_reply_place(reply, on_success, on_error);		  
 	  },
 	  error: function(jqXHR, textStatus){
@@ -379,7 +410,8 @@ collectopia.api.Place.prototype.reqRate = function(score, on_success, on_error) 
  * @returns {collectopia.api.MarkerImage} Get the normal marker image
  */
 collectopia.api.Place.prototype.getMarkerImage = function() {
-	return new collectopia.api.MarkerImage(this.markerpack_hash, this.markerpack_index);		
+	return new collectopia.api.MarkerImage(
+			this.markerpack_hash, this.markerpack_index, false, this.options['skip_marker_cache']);		
 };
 
 /**
@@ -387,7 +419,8 @@ collectopia.api.Place.prototype.getMarkerImage = function() {
  * @returns {collectopia.api.MarkerImage} Get the focused marker image
  */
 collectopia.api.Place.prototype.getFocusedMarkerImage = function() {
-	return new collectopia.api.MarkerImage(this.markerpack_hash, this.markerpack_index, true);		
+	return new collectopia.api.MarkerImage(
+			this.markerpack_hash, this.markerpack_index, true, this.options['skip_marker_cache']);		
 };
 
 /**
@@ -410,12 +443,12 @@ collectopia.api.Place.prototype.getVideoUrls = function() {
  * Class to handle photos
  */
 collectopia.api.Photo = function(data) {
-	jQuery.extend(this, data, {
+	jQuery.extend(this, {
 		name : 'noname',
 		width : 0,
 		height: 0,
 		size: 0
-	});
+	}, data);
 };
 
 /**
@@ -477,14 +510,19 @@ collectopia.api.Photo.prototype.reqDelete = function(on_success, on_error) {
 
 /**
  * A marker image is a sprite from a Marker Pack
+ * @param pach_hash The hash id of the markers pack.
+ * @param index The index of the marke inside the markers pack.
+ * @param focused Flag if we are createing the focused or the normal marker.
+ * @param skip_cache Flag that if enabled then we will skip the browsers cache.
  */
-collectopia.api.MarkerImage = function(pack_hash, index, focused) {
+collectopia.api.MarkerImage = function(pack_hash, index, focused, skip_cache) {
 	var y_step = 56, x_step = 60;
 
 	this.pack = pack_hash;
 	this.size = (focused)?{ width: 120, height: 56}:{ width: 60, height: 28};	
 	this.origin = { x : (focused) ? x_step: 0, y: index * y_step };
 	this.anchor = { x : 0, y: (focused) ? 55: 27 };
+	this.skip_cache = Boolean(skip_cache);
 };
 
 /**
@@ -503,5 +541,6 @@ collectopia.api.MarkerImage.prototype.toGoogleMarkerImage = function() {
  * Get the actual marker pack image url
  */
 collectopia.api.MarkerImage.prototype.getImageUrl = function() {
-	return collectopia.api.furl('/data/markers/' + this.pack + '.png');	
+	return collectopia.api.furl('/data/markers/' + this.pack + '.png' 
+			+ (this.skip_cache?'?avoid_cache=' + Math.random():''));	
 };

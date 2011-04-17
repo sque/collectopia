@@ -268,6 +268,12 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 		/* Add photo management support */
 		var ui_show_uploads = function() {
 			dom.addClass('show-uploads').parents('.panel').animate({ width : 542 });
+			/*dom.find('td.right-row').resize(function(e) {
+				td = $(this);
+				td.find('> div').height(td.height());
+				console.log('resize', e);
+			});
+			dom.find('td.right-row').triggerHandler('resize');*/			
 		};
 		
 		var create_upload_row = function(thumb_url, photo, delete_callback) {

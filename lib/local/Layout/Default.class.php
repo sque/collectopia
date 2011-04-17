@@ -56,6 +56,7 @@ class Layout_Default extends Layout
         $this->get_document()->add_ref_css(surl('/static/fileupload/jquery.fileupload-ui.css'));
         $this->get_document()->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
         
+        
         $this->get_document()->add_ref_js(surl('/static/js/jquery-1.4.4.min.js'));
         $this->get_document()->add_ref_js(surl('/static/js/jquery-ui-1.8.6.custom.min.js'));
 		$this->get_document()->add_ref_js(surl('/static/fileupload/jquery.fileupload.js'));
