@@ -6,7 +6,7 @@ collectopia.namespace('collectopia');
  */
 collectopia.InfoPanel = function(map, place) {
 	var pthis = this;
-	collectopia.Panel.call(this, 'info', place.name,[
+	collectopia.Panel.call(this, 'info', place.short_name,[
 	    {'title': 'report fake', 'callback': function(){
 	    	console.log('Report fake');
 			}

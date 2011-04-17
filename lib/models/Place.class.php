@@ -100,10 +100,10 @@ class Place extends DB_Record
 			$normal->gd_handle(),	// resource
 			6.4,					// font size
 			0,						// angle
-			5,						// position X
+			4,						// position X
 			20,						// position Y
 			imagecolorexact($normal->gd_handle(), 255,255,255),
-			dirname(__FILE__) . '/../../static/fonts/arial.ttf',
+			Registry::get('markers.fonts.directory') . '/arial.ttf',
 			$this->short_name
 		);
 		
@@ -116,7 +116,7 @@ class Place extends DB_Record
 			8,						// position X
 			37,						// position Y
 			imagecolorexact($focused->gd_handle(), 255,255,255),
-			dirname(__FILE__) . '/../../static/fonts/arial.ttf',
+			Registry::get('markers.fonts.directory') . '/arial.ttf',
 			$this->short_name
 		);
 		

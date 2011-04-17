@@ -17,22 +17,11 @@ collectopia.AddPlacePanel = function(map, geocoder) {
 	this.map = map;
 	this.geocoder = geocoder;
 
-	// Try to adjust view 
+	// Move a bit on the right to see th marker
 	var view = collectopia.panels.size();
-	this.move(view.width - this.dom.width() - 240, 15);
-	if (map.google.map.getZoom() < 5)
-		map.google.map.setZoom(map.google.map.getZoom() + 2);
-	else if (map.google.map.getZoom() < 7)
-		map.google.map.setZoom(7);
+	this.move(view.width - this.dom.width() - 240, 15);	
 	
 	this.editor = new collectopia.ui.PlaceEditor(undefined, map, geocoder);
-	this.editor.attachTo(pthis.dom_body);
-	
-	this.events.bind('onclose', function(){
-		pthis.editor.marker.setMap(null);
-	});	
-	
-	
 	this.editor.getEvents().bind('ajax.start', function(){ pthis.disable('<div class="loading" />'); });
 	this.editor.getEvents().bind('ajax.end', function(){ pthis.enable(); });
 	this.editor.getEvents().bind('success', function(e, args) {
@@ -51,6 +40,14 @@ collectopia.AddPlacePanel = function(map, geocoder) {
 		pthis.editor.marker.setMap(null);
 		pthis.dom.delay(1500).fadeOut('slow', function(){	pthis.close(); });
 	});
+	this.editor.attachTo(pthis.dom_body);
+	
+	this.events.bind('onclose', function(){
+		pthis.editor.marker.setMap(null);
+	});	
+	
+	
+
 };
 collectopia.AddPlacePanel.prototype = jQuery.extend({}, collectopia.Panel.prototype);
 collectopia.AddPlacePanel.prototype.constructor = collectopia.AddPlacePanel;

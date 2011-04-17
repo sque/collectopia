@@ -123,6 +123,8 @@ collectopia = {
 	}
 };
 
+/* --------------------------------------------------------------------*/
+
 /**
  * Class for managing errors
  */
@@ -131,11 +133,13 @@ collectopia.api.Error = function(message, fields) {
 	this.fields = fields;
 };
 
+/* --------------------------------------------------------------------*/
+
 /**
  * Forms are used to submit data
  */
 collectopia.api.Form = function(data, object, submit_action) {
-	jQuery.extend(this, data, { method : 'get' });	
+	jQuery.extend(this, data);	
 	this.object = object;
 	this.submit_action = submit_action;
 };
@@ -168,6 +172,8 @@ collectopia.api.Form.prototype.submit = function(data, on_success, on_error) {
 			
 		});
 };
+
+/* --------------------------------------------------------------------*/
 
 /**
  * This class reflects the availabe API for places.
@@ -398,6 +404,8 @@ collectopia.api.Place.prototype.getVideoUrls = function() {
 	}
 };
 
+/* --------------------------------------------------------------------*/
+
 /**
  * Class to handle photos
  */
@@ -464,6 +472,8 @@ collectopia.api.Photo.prototype.reqDelete = function(on_success, on_error) {
 		ajaxRequest['error'] = on_error;
 	return jQuery.ajax(ajaxRequest);
 };
+
+/* --------------------------------------------------------------------*/
 
 /**
  * A marker image is a sprite from a Marker Pack

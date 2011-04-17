@@ -34,7 +34,7 @@ collectopia.ui.Component.prototype.getDom = function() {
  */
 collectopia.ui.Component.prototype.attachTo = function(el) {	
 	el.append(this.getDom());
-	this.events.triggerHandler('attached', { 'uic' : this });
+	this.events.triggerHandler('attached');
 };
 
 /**
@@ -42,22 +42,28 @@ collectopia.ui.Component.prototype.attachTo = function(el) {
  */
 collectopia.ui.Component.prototype.detach = function() {
 	this.getDom().detach();
-	this.events.triggerHandler('detached', { 'uic' : this });
+	this.events.triggerHandler('detached');
 };
 
+/**
+ * Check if this component is attached
+ */
+collectopia.ui.Component.prototype.isAttached = function() {
+	if (!collectopia.isDefined(this.dom))
+		return false;
+	return (this.dom.parent().length != 0);
+};
 
-
-
-
+/* --------------------------------------------------------------------*/
 
 /**
  * Form component to visualize the {collectopia.api.Form}
  * @param options
  * Events exposed by this object are
- *  - success: When this form is submitted succesfully
- *  - start: When a submition starts
- *  - finish: When a submition finishes
- *  - error: When a submition failed
+ *  - success: When this form is submitted successfully
+ *  - start: When a submision starts
+ *  - finish: When a submision finishes
+ *  - error: When a submision failed
  */
 collectopia.ui.Form = function(form, options) {
 	collectopia.ui.Component.call(this);
@@ -143,13 +149,13 @@ collectopia.ui.Form.prototype.buildDom = function() {
 			ui_form.api_form.submit(
 				form_data,
 				function(){
-					ui_form.getEvents().triggerHandler('success', { form: ui_form } );
-					ui_form.getEvents().triggerHandler('finish', { form: ui_form } );
+					ui_form.getEvents().triggerHandler('success');
+					ui_form.getEvents().triggerHandler('finish' );
 				},
 				function(error) {
-					update_error_fields.call(ui_form, error);
-					ui_form.getEvents().triggerHandler('error', { form: ui_form } );
-					ui_form.getEvents().triggerHandler('finish', { form: ui_form } );
+					ui_form.getEvents().triggerHandler('error', error );
+					update_error_fields.call(ui_form, error);					
+					ui_form.getEvents().triggerHandler('finish');
 				}
 			);		
 		return false;	// Break HTML submition
@@ -181,14 +187,13 @@ collectopia.ui.Form.prototype.submit = function(){
 	this.dom_form.submit();
 };
 
-
-
+/* --------------------------------------------------------------------*/
 
 /**
  * A complete place editor UI.
  * @param place The place we are editing. (Give null for new one)
  * Events exposed by this component
- *  - success When the place editor finished succesfully.
+ *  - success When the place editor finished successfully.
  *  - ajax.start
  *  - ajax.end
  */
@@ -200,29 +205,6 @@ collectopia.ui.PlaceEditor = function(place, map, geocoder) {
 	this.place = this.mode_create?new collectopia.api.Place({photos: [], categories : []}):place;
 	this.map = map;
 	this.geocoder = geocoder;
-	
-	// On attached add google marker
-	this.events.bind('attached', function(event, args){
-		var ped = args['uic'];
-		
-		ped.marker = ped.getGoogleMarker();
-		/* Listen on marker "position_changed" and update location on creation form */
-		google.maps.event.addListener(this.marker, 'dragend', marker_moved_action = function() {
-			geocoder.geocode({'latLng': ped.marker.getPosition(), 'language' : 'en'}, function(results, status) {
-				if (status == google.maps.GeocoderStatus.OK) {
-					ped.form.setLocation(results[0].geometry.location);
-					ped.form.setGeocode(results[0]);
-				} else {
-					ped.form.setLocation();
-					ped.getDom().find('.address div').text('none');
-				}
-				
-				// On update remove error hints
-				ped.getDom().find('.address .ui-form-error').remove();
-	 				
-			});
-		});
-	});
 	
 	// On detached remove google marker
 	this.events.bind('detached', function(event) {
@@ -244,6 +226,7 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 	var dom = $('<div class="component place-editor">');	
 
 	// Ask for the needed form
+	ped.events.triggerHandler('ajax.start');
 	this.place[this.mode_create?'reqCreateForm':'reqEditForm'](function(form_data){
 		ped.form = new collectopia.ui.PlaceEditor.Form(form_data);
 		ped.form.attachTo(dom);
@@ -364,10 +347,57 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 	        		callBack();
 	        	});
 	        }
-	    });
-	});
+	    }); // fileUploadUi
+		
+		// On attached add google marker
+		ped.events.bind('attached', function(event, args){
+			event.target.showMarker();
+		});
+		if (ped.isAttached())
+			ped.showMarker();
+		
+		ped.events.triggerHandler('ajax.end');
+	}); // reqXXXFrom
 	
 	return dom;
+};
+
+/**
+ * Show the google marker on the map for this editor
+ */
+collectopia.ui.PlaceEditor.prototype.showMarker = function() {
+	if (collectopia.isDefined(this.marker)) {
+		// In case that was just hidden
+		this.marker.setMap(this.map);
+		return;
+	}
+	
+	this.marker = this.getGoogleMarker();
+	/* Listen on marker "position_changed" and update location on creation form */
+	var ped = this;
+	google.maps.event.addListener(this.marker, 'dragend', marker_moved_action = function() {
+		ped.geocoder.geocode({'latLng': ped.marker.getPosition(), 'language' : 'en'}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				ped.form.setLocation(results[0].geometry.location);
+				ped.form.setGeocode(results[0]);
+			} else {
+				ped.form.setLocation();
+				ped.getDom().find('.address div').text('none');
+			}
+			
+			// On update remove error hints
+			ped.getDom().find('.address .ui-form-error').remove(); 				
+		});
+	});
+	marker_moved_action();
+};
+
+/**
+ * Hide the google marker of this editor from the map.
+ */
+collectopia.ui.PlaceEditor.prototype.hideMarker = function() {
+	if (collectopia.isDefined(this.marker))
+		this.marker.setMap(null);
 };
 
 /**
@@ -415,7 +445,7 @@ collectopia.ui.PlaceEditor.prototype.submit = function() {
 	this.form.submit();
 };
 
-
+/* --------------------------------------------------------------------*/
 
 /**
  * Specialization of ui.From for PlaceEditor
@@ -424,6 +454,13 @@ collectopia.ui.PlaceEditor.prototype.submit = function() {
  */
 collectopia.ui.PlaceEditor.Form = function(data, options) {
 	collectopia.ui.Form.call(this, data, options);
+	
+	// Hook on error to be more descriptive
+	this.events.bind('error', function(event, error){
+		if (collectopia.isDefined(error.fields.loc_lat) || collectopia.isDefined(error.fields.loc_lng)) {
+			error.fields.address = error.fields.loc_lat;
+		}
+	});
 };
 collectopia.ui.PlaceEditor.Form.prototype = jQuery.extend({}, collectopia.ui.Form.prototype);
 collectopia.ui.PlaceEditor.Form.prototype.constructor = collectopia.ui.PlaceEditor.Form; 

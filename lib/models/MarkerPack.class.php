@@ -72,6 +72,11 @@ class MarkerPack extends DB_Record
 			imagecopy($img, $orig , 0, 0, 0, 0, imagesx($orig), imagesy($orig));
     	}
     	
+		// Clean up area
+    	imagefilledrectangle($img, 0, $y_step * $this->total,
+    		($x_step * 3) - 1, $y_step * ($this->total + 1) - 1,
+    		imagecolorexactalpha($img, 0, 0, 0, 255));
+    		
     	// Append marker images at the end
     	imagecopy($img, $normal->gd_handle(), 0, $y_step * $this->total, 0, 0,
     		$normal->get_meta_info('width'), $normal->get_meta_info('height'));

@@ -78,7 +78,7 @@ try {
 	exit;
 }catch (Exception $e){
 	header('500 Internal Server Error');
-	echo '<h1>5005 Internal Server Error</h1>';
+	echo '<h1>500 Internal Server Error</h1>';
 	exit;
 }
 
