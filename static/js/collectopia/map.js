@@ -1,4 +1,3 @@
-
 collectopia.namespace('collectopia');
 
 /**
@@ -22,8 +21,8 @@ collectopia.Map = function(dom, categories) {
 					return;
 				btn.addClass('enabled');
 				
-				var create_panel = new collectopia.CreatePlacePanel(pthis, pthis.google.geocoder);
-				create_panel.events.bind('closed', function() {
+				var add_panel = new collectopia.AddPlacePanel(pthis, pthis.google.geocoder);
+				add_panel.events.bind('closed', function() {
 					btn.stop(true, true).animate({left: -65}).removeClass('enabled');
 					pthis.drawPlaces();
 				}); 
@@ -69,15 +68,6 @@ collectopia.Map = function(dom, categories) {
 			pthis.drawPlaces();
 		});
 		this.google.geocoder = new google.maps.Geocoder();
-	};
-	
-	/* Fetch asynchronous form templates */
-	var fetch_templates = function() {
-
-		// Fetch needed panels
-		$.get('api/place/new', function(data){
-			$('#panels').html($('#panels').html() + data );
-		});
 	};
 	
 	/* Draw ui search */
@@ -144,7 +134,7 @@ collectopia.Map = function(dom, categories) {
 			this.buttons[class].dom.createEl('span', { class: 'description'}).text(this.buttons[class].title);
 			this.buttons[class].dom.click(this.buttons[class].click);
 			
-			if (collectopia.is_defined(this.buttons[class].initialize))
+			if (collectopia.isDefined(this.buttons[class].initialize))
 					this.buttons[class].initialize(this.buttons[class].dom);
 		}
 		
@@ -167,35 +157,33 @@ collectopia.Map = function(dom, categories) {
 	};
 
 	init_google_map.call(this);
-	fetch_templates.call(this);
 	draw_ui_search.call(this);
 	draw_ui_buttons.call(this);
 
-	$.get('api/place', function(data){
-		pthis.places = data;
+	$.get('api/place/+all', function(data){
+		pthis.places = {};
+		for(var id in data)
+			pthis.places[id] = new collectopia.api.Place(data[id]);
 		pthis.drawPlaces();
 	});
 };
+
+
 collectopia.Map.prototype.drawPlaces = function() {
 	for(var i in this.places){
 		var place = this.places[i];
 		
 		// Skip the rendered ones.
-		if (collectopia.is_defined(place.marker))
+		if (collectopia.isDefined(place.marker))
 			continue;
 		
 		place.marker = new google.maps.Marker( {
 			map : this.google.map,
 			position : new google.maps.LatLng(place.loc_lat, place.loc_lng),
 			title : place.name,
-			icon : new google.maps.MarkerImage(
-				'api/place/' + place.id + '/image/marker',
-				null,
-				null,
-				new google.maps.Point(0, 28)
-			),
+			icon : place.getMarkerImage().toGoogleMarkerImage(),
 			shadow : new google.maps.MarkerImage(
-				'static/images/marker_dark_shadow.png',
+				'static/images/marker_shadow.png',
 				null,
 				null,
 				new google.maps.Point(0, 28)

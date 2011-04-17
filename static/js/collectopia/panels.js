@@ -1,6 +1,4 @@
-
 collectopia.namespace('collectopia');
-
 
 /**
  * A complete system to manage panels and give
@@ -87,7 +85,7 @@ collectopia.PanelSystem.prototype.registerPanel = function(p) {
 	
 	// Blur last
 	var f = this.focused();
-	if (collectopia.is_defined(f))
+	if (collectopia.isDefined(f))
 		f.events.triggerHandler('blur', { panel: f});
 
 	// Focus new
@@ -107,7 +105,8 @@ collectopia.PanelSystem.prototype.unregisterPanel = function(p) {
 		// Removed the focused		
 		this.zorder.splice(zpos, 1);
 		this._private_.update_css_zindex();
-		this.all_panels[this.zorder[this.zorder.length - 1]].events.triggerHandler('focus', { panel : this});
+		if (this.zorder.length != 0)
+			this.all_panels[this.zorder[this.zorder.length - 1]].events.triggerHandler('focus', { panel : this});
 	} else if (zpos != -1) {
 		this.zorder.splice(zpos, 1);
 		this._private_.update_css_zindex();
@@ -118,6 +117,8 @@ collectopia.PanelSystem.prototype.unregisterPanel = function(p) {
  * Get the focused window
  */
 collectopia.PanelSystem.prototype.focused = function() {
+	if (this.zorder.length == 0)
+		return;
 	return this.all_panels[this.zorder[this.zorder.length - 1]];
 };
 
@@ -165,7 +166,7 @@ collectopia.PanelSystem.prototype.switchExposeOn = function() {
 		var p = this.all_panels[id].dom;
 		
 		// Save state
-		if (! collectopia.is_defined(this.expose_mode.stored_state.positions[id])) {
+		if (! collectopia.isDefined(this.expose_mode.stored_state.positions[id])) {
 			this.expose_mode.stored_state.positions[id] = {
 				left : p.offset().left
 			};
@@ -195,7 +196,7 @@ collectopia.PanelSystem.prototype.switchExposeOff = function() {
 	
 	// Loop around all stored states
 	for(var id in this.expose_mode.stored_state.positions) {
-		if (! collectopia.is_defined(this.all_panels[id])) {
+		if (! collectopia.isDefined(this.all_panels[id])) {
 			// This panel is lost
 			delete this.expose_mode.stored_state.positions[id];
 			continue;
@@ -219,6 +220,9 @@ collectopia.PanelSystem.prototype.switchExposeOff = function() {
 	this.events.triggerHandler('expose-changed', { enabled : false });
 };
 
+/**
+ * Toggle the state of expose mode by switching On and Of
+ */
 collectopia.PanelSystem.prototype.toggleExpose = function() {
 	if (this.expose_mode.enabled)
 		this.switchExposeOff();
@@ -228,3 +232,170 @@ collectopia.PanelSystem.prototype.toggleExpose = function() {
 
 /* Initialize panel system */
 collectopia.panels = new collectopia.PanelSystem();
+
+/**
+ * Create a new panel, based on templates from #panels div.
+ * @param type The css class of the panel. This will be used
+ * 	to search for templates on #panels container.
+ * @param title	The small title on the left top corner of the panel.
+ * @param actions Array of objects { title: string, callback: callable }
+ * @param parent The parent element that this panel will be created in.
+ * 	If it is undefined, it will be rendered in #content.
+ * 
+ * @par Events
+ * 
+ * - 'onclose' When close has been requested.
+ * - 'closed' When the close operation and effects has finished. 
+ * - 'focus' when this panel is brought to the foreground.
+ * - 'blur' when this panel looses foreground.
+ * - 'disabled' when this panel is disabled.
+ * - 'enabled' when this panel is enabled.
+ */
+collectopia.Panel = function(type, title, actions, parent) {
+	var pthis = this,
+		template = $('#panels').find('.' + type),
+		inner_div,
+		id = null;
+	
+	// Create window DOM	
+	this.dom_parent = (parent == undefined)?$('#content'):parent;
+	this.dom = $('<div class="panel"/>').append(
+		'<div><span class="title" />' +
+		'<span class="close">close</span>' +
+		'<div class="container" /></div>'
+	);
+	this.dom.find('.title').text(title);
+	this.dom.append($('<ul class="actions"></ul>'))
+		.addClass(type)
+		.hide();
+	this.dom_body = this.dom.find('.container');
+	this.dom.data('panel', this);	
+	if (template.length > 0)
+		this.dom_body.append(template.clone());
+	this.dom_parent.append(this.dom);
+	this.title = title;
+	this.enabled = true;
+	
+	// Add support for events
+	this.events = $(this);
+	
+	// Add actions
+	if (typeof(actions) != 'undefined') {
+		$.each(actions, function(){
+			pthis.addAction(this.title, this.callback);
+		});
+	}
+	
+	// Input functionality to panel
+	this.dom.mousedown(function(event){
+		pthis.bringToFront();
+	});
+	this.dom.draggable({
+		cancel : '.container, .close, .actions',
+		cursor: 'crosshair'		
+	});
+	
+	this.dom.find('.close').click(function(){
+		pthis.close();
+	});
+	
+	// Register at panel system
+	collectopia.panels.registerPanel(this);
+	
+	// Panel is ready, lets show it.
+	this.dom.fadeIn('slow');
+};
+
+/**
+ * Add an action to the panel
+ * @param title The title of the action or an element to add.
+ * @param callback A function to callback when finished.
+ */
+collectopia.Panel.prototype.addAction = function(title, callback) {
+	var ul = this.dom.find('ul.actions');
+	var title_el = collectopia.isString(title)?$('<a href="#"/>').text(title):title;
+	ul.append($('<li/>').append(title_el.click(callback)));
+};
+
+/**
+ * Request to close this panel.
+ */
+collectopia.Panel.prototype.close = function() {
+	var pthis = this;
+
+	// On close event
+	this.events.triggerHandler('onclose', { panel: pthis});
+	
+	// Start close effect
+	this.dom.fadeOut('300', function() {
+		collectopia.panels.unregisterPanel(pthis);
+		
+		pthis.dom.remove();
+		
+		// Everything is finished
+		pthis.events.triggerHandler('closed', { panel: pthis });
+	});
+};
+
+/**
+ * Bring to front z-index
+ */
+collectopia.Panel.prototype.bringToFront = function() {
+	collectopia.panels.bringToFront(this.id);
+};
+
+/**
+ * Get the size of the panel
+ */
+collectopia.Panel.prototype.size = function(){
+	return { width: this.dom.outerWidth(), height: this.dom.outerHeight() };
+};
+
+/**
+ * Move the panel at an offset
+ */
+collectopia.Panel.prototype.move = function(left, top) {
+	this.dom.offset({left: left, top: top});
+};
+
+/**
+ * Move the panel near something?
+ */
+collectopia.Panel.prototype.moveNear = function(left, top, width, height) {
+	var view_size = collectopia.panels.size();
+	var panel_size = this.size();
+	var dest_point = { left: left + width, top: top };
+	
+	// If there is no space on right and the space on left is enough
+	if (((left + width + panel_size.width) > view_size.width) && (left > panel_size.width))
+		dest_point.left = left - panel_size.width;
+	
+	if ((top + panel_size.height) > view_size.height)
+		dest_point.top = view_size.height - panel_size.height; 
+	
+	this.move(dest_point.left, dest_point.top);
+};
+
+/**
+ * Disable this panel
+ */
+collectopia.Panel.prototype.disable = function(html) {
+	if (!this.enabled)
+		return;
+	this.dom.addClass('disabled');
+	this.dom_body.createEl('div', { class : 'disable_frame'}).html(html);	
+	this.enabled = false;
+	this.events.triggerHandler('disabled', { panel : this});
+};
+
+/**
+ * Enable this panel
+ */
+collectopia.Panel.prototype.enable = function(html) {
+	if (this.enabled)
+		return;
+	this.dom.removeClass('disabled');
+	this.dom_body.find('.disable_frame').remove();
+	this.enabled = true;
+	this.events.triggerHandler('enabled', { panel : this});
+};

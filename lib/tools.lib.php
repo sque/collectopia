@@ -34,4 +34,11 @@ function surl($relative)
     return (dirname($_SERVER['SCRIPT_NAME']) != '/'? dirname($_SERVER['SCRIPT_NAME']):'') . $relative;
 }
 
-?>
+
+function color_hex_to_dec($hex){
+	return array(
+		hexdec(substr($hex, 0, 2)),
+		hexdec(substr($hex, 2, 2)),
+		hexdec(substr($hex, 4, 2))
+	);
+}

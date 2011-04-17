@@ -6,11 +6,16 @@ collectopia.namespace('collectopia');
  */
 collectopia.InfoPanel = function(map, place) {
 	var pthis = this;
-	collectopia.Panel.call(this, 'info', place.name, 
-		[{'title': 'report fake', 'callback': function(){
-				console.log('Report fake');
+	collectopia.Panel.call(this, 'info', place.name,[
+	    {'title': 'report fake', 'callback': function(){
+	    	console.log('Report fake');
 			}
-	}]);
+		},
+		{'title': 'edit', 'callback': function(){
+	    	pthis.switchToEdit();
+			}
+		},
+		]);
 	
 	// Store variables
 	this.place = place;	
@@ -82,8 +87,8 @@ collectopia.InfoPanel = function(map, place) {
 		var cont = media_div.createEl('div', { class : 'photos'});
 		var gal = cont.createEl('div', {class : 'gallery'});
 		for(var i in place.photos)
-			gal.createEl('a', { rel : 'photos_place_' + this.place.id, 'href' : place.photos[i]['url'], target: '_blank'})
-				.createEl('img', { src : place.photos[i]['thumb_url']});
+			gal.createEl('a', { rel : 'photos_place_' + this.place.id, 'href' : place.photos[i].getUrl(), target: '_blank'})
+				.createEl('img', { src : place.photos[i].getThumbUrl()});
 		gal.after('<div class="pager" id="photos_nav_' + escape(String(this.place.id)) + '" >')
 			.cycle({ 
 		    fx:     'scrollLeft', 
@@ -144,28 +149,18 @@ collectopia.InfoPanel = function(map, place) {
 		media_div.createEl('div', { class : 'video empty' })
 			.createEl('img', { src : 'static/css/images/no_video.jpg'});
 	}
-	
 	media_div.createEl('div', { class: 'spacer', style : 'clear: both;' });
 
-	
 	// Description
 	inner_div.createEl('div', { class : 'description'})
 		.text(place.description);
 	
 	var highlight_marker = function(){
-		var marker = pthis.place.marker;
-		marker.anchor = new google.maps.Point(0,56);
-		marker.scaledSize = marker.size = new google.maps.Size(120, 56);
-		pthis.place.marker.setIcon();
-		pthis.place.marker.setIcon(marker);		
+		pthis.place.marker.setIcon(pthis.place.getFocusedMarkerImage().toGoogleMarkerImage());		
 	};
 	
 	var downlight_marker = function(){
-		var marker = pthis.place.marker;
-		marker.anchor = new google.maps.Point(0,28);
-		marker.scaledSize = marker.size = new google.maps.Size(60, 28);
-		pthis.place.marker.setIcon();
-		pthis.place.marker.setIcon(marker);
+		pthis.place.marker.setIcon(pthis.place.getMarkerImage().toGoogleMarkerImage());
 	};
 	inner_div.createEl('div', { class: 'spacer', style : 'clear: both;' });
 	
@@ -183,6 +178,13 @@ collectopia.InfoPanel = function(map, place) {
 	marker_pos = this.place.marker.getPoint();
 	this.moveNear(marker_pos.x - 10, marker_pos.y - 56, 140, 56);
 };
-collectopia.InfoPanel.prototype = new collectopia.Panel();
+collectopia.InfoPanel.prototype = jQuery.extend({}, collectopia.Panel.prototype);
 collectopia.InfoPanel.prototype.constructor = collectopia.InfoPanel;
 
+collectopia.InfoPanel.prototype.switchToEdit = function() {
+	this.dom_body.html('');
+	var pthis = this;
+	this.peditor = new collectopia.widget.PlaceEditor(this.place, function(){
+		pthis.peditor.appendTo(pthis.dom_body);
+	});	
+};

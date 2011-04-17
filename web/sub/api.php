@@ -20,26 +20,29 @@
  */
 
 
-Stupid::add_rule('photo_new',
-    array('type' => 'url_path', 'chunk[2]' => '/^photo$/', 'chunk[3]' => '/^new$/')
+/* Photos Actions */
+Stupid::add_rule('photo_create',
+    array('type' => 'url_path', 'chunk[2]' => '/^photo$/', 'chunk[3]' => '/^\+new$/')
+);
+Stupid::add_rule('photo_delete_temp',
+    array('type' => 'url_path', 'chunk[2]' => '/^photo$/', 'chunk[3]' => '/^(?P<secret>[\w]+)$/', 'chunk[4]' => '/^\+delete-temp$/'),
+    array('type' => 'url_params', 'op' => 'isset', 'param' => 'secret', 'param_type' => 'post') 
 );
 
-Stupid::add_rule('photo_drop_temp',
-    array('type' => 'url_path', 'chunk[2]' => '/^photo$/', 'chunk[3]' => '/^(?P<key>[\w]+)$/', 'chunk[4]' => '/^\+drop$/')
-);
-
+/* Place actions */
 Stupid::add_rule('place_new',
-    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^new$/') 
+    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^\+new$/')
 );
-Stupid::add_rule('place_image',
-    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^(\d+)$/', 'chunk[4]' => '/^image$/') 
+Stupid::add_rule('place_id_edit',
+    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^@(\d+)$/', 'chunk[4]' => '/^\+edit$/')
 );
-Stupid::add_rule('place_rate',
-    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^(\d+)$/', 'chunk[4]' => '/^rate$/'),
+Stupid::add_rule('place_id_rate',
+    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^@(\d+)$/', 'chunk[4]' => '/^\+rate$/'),
     array('type' => 'url_params', 'op' => 'isnumeric', 'param' => 'rate') 
 );
+
 Stupid::add_rule('place_all',
-    array('type' => 'url_path', 'chunk[2]' => '/^place$/') 
+    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^\+all$/') 
 );
 
 Stupid::add_rule('search',
@@ -49,77 +52,30 @@ Stupid::add_rule('search',
 Stupid::add_rule('category_all',
     array('type' => 'url_path', 'chunk[2]' => '/^category/') 
 );
-Stupid::set_default_action('data_default');
+Stupid::set_default_action(function() { throw new Exception404('Unknown action.'); } );
 Stupid::chain_reaction();
-
-function color_hex_to_dec($hex){
-	return array(
-		hexdec(substr($hex, 0, 2)),
-		hexdec(substr($hex, 2, 2)),
-		hexdec(substr($hex, 4, 2))
-	);
-}
-
-function data_default(){
-	Layout::open('default')->activate();
-	$frm = new UI_PlaceNewForm();
-	etag('div class="panel"',
-		tag('div',
-			tag('span class="title"', 'create'),
-			tag('span class="close"', 'close'),
-			$frm->render(),
-			tag('ul class="actions"',
-				tag('li', tag('a href="#"', 'send')),
-				tag('li', tag('a href="#"', 'print'))
-			)
-		)		
-	);
-}
 
 function place_new(){
 	sleep(1.5);
-	Layout::open('default')->deactivate();
-	$frm = new UI_PlaceNewForm();
-	echo $frm->render();
+	Layout::open('default')->deactivate();	
+	$pef = new PlaceEditForm();
+	$pef->json_render();	
 }
 
-function place_image($id) {
-	if (!$p = Place::open(array('id' => $id)))
-		throw new Exception404();
-
-	$image = new Image(dirname(__FILE__) . '/../../static/images/marker_dark.png');
-	imagefttext(
-		$image->gd_handle(),	// resource
-		6.4,						// font size
-		0,						// angle
-		3,						// position X
-		20,						// position Y
-		imagecolorexact($image->gd_handle(), 255,255,255),
-		dirname(__FILE__) . '/../../static/fonts/arial.ttf',
-		$p->name);
+function place_id_edit($pid){
+	if (!($p = Place::open($pid)))
+		throw new Exception404("Unknown place.");
 		
-	// Put categories
-	$x = 55;
-	foreach($p->categories->all() as $cat) {
-		$color = color_hex_to_dec($cat->color);
-		imagefilledellipse(
-			$image->gd_handle(),
-			$x,
-			5,
-			9,
-			9,
-			imagecolorexact($image->gd_handle(), $color[0], $color[1], $color[2])
-		);		
-		$x -= 12;
-	}
-	
-	// Dump image
-	$image->dump();	
+	sleep(1.5);
+	Layout::open('default')->deactivate();
+	$frm = new UI_PlaceEditForm($p);
+	header('Content-type: application/json');
+	echo json_encode($frm->get_fields());
 }
 
-function place_rate($id) {
+function place_id_rate($id) {
 	if (!$p = Place::open(array('id' => $id)))
-		throw new Exception404();
+		throw new Exception404('Unknown place.');
 	$vote_rate = Net_HTTP_RequestParam::get('rate');
 	
 	$new_rating = (($p->rate_current * $p->rate_total) + $vote_rate) / ($p->rate_total + 1);
@@ -128,7 +84,7 @@ function place_rate($id) {
 	$p->save();
 	
 	header('Content-type: application/json');
-	echo json_encode($p->toArray());
+	echo json_encode($p->to_api());
 }
 
 function place_all(){
@@ -136,7 +92,7 @@ function place_all(){
 	$places = Place::open_all();
 	$data = array();
 	foreach($places as $p)
-		$data[$p->id] = $p->all_data();
+		$data[$p->id] = $p->to_api();
 
 	echo json_encode($data);
 }
@@ -165,7 +121,7 @@ function search(){
 	echo json_encode($hits);
 }
 
-function photo_new() {
+function photo_create() {
 	header('Content-type: application/json');
 	
 	if ((!isset($_FILES['image'])) || ($_FILES['image']['error'] != 0))
@@ -180,9 +136,10 @@ function photo_new() {
 		));
 		return;
 	}
-	try {
-		$img = @new Image($_FILES['image']['tmp_name']);
-	} catch(Exception $e) {
+	
+	// Create a temporary photo
+	$photo = Photo::create_from_file($_FILES['image']['name'], $_FILES['image']['tmp_name'], $img);
+	if (!$photo) {
 		echo json_encode(array(
 			'error' => 'Error reading image.',
 			'name' => $_FILES['image']['name']
@@ -190,35 +147,25 @@ function photo_new() {
 		return;
 	}
 	
-	$img_data = $img->data(array('format' => IMAGETYPE_JPEG, 'quality' => 93));
-	$data_hash = md5($img_data);
-
-	$tmp_photo = TmpPhoto::create(array(
-		'key' => md5($data_hash . rand(1, getrandmax())),
-		'name' => $_FILES['image']['name'],
-		'data_hash' => $data_hash
-	));
-	file_put_contents($tmp_photo->fpath(), $img_data);
+	// Create thumb
 	$thumb = $img->resize(48, 48, false);
 	
 	// Clean up expired photos
-	TmpPhoto::cleanUpExpired();
+	Photo::clean_up_expired();
 	
-	
-	echo json_encode(array(
-		'name' => $tmp_photo->name,
-		'key' => $tmp_photo->key,
-		'type' => 'image/jpeg',
-		'size' => count($img_data),
-		'thumb' => 'data:image/jpeg;base64,' .base64_encode($thumb->data(array('format' => IMAGETYPE_JPEG, 'quality' => 91)))
-	));	
+	// Return API object
+	$pobj = $photo->to_api();
+	$pobj['thumb_url'] = 'data:image/jpeg;base64,' .base64_encode($thumb->data(array('format' => IMAGETYPE_JPEG, 'quality' => 91))); 
+	echo json_encode($pobj);	
 }
 
-function photo_drop_temp($key) {
-	if (!($photo = TmpPhoto::open($key))){
-		include __DIR__ . '/../not_found.php';
-		exit;
-	}
+function photo_delete_temp($secret) {
+	
+	if (Net_HTTP_RequestParam::get('secret', 'post') != $secret)
+		throw new Exception404();
+	
+	if (!($photo = Photo::open_temporary($secret)))
+		throw new Exception404();
 
 	$photo->delete();
 }

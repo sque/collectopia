@@ -67,7 +67,18 @@ Stupid::add_rule('include_sub',
     array('type' => 'url_path', 'chunk[1]' => '/^([\w]+)$/'),
     array('type' => 'func', 'func' => 'is_valid_sub')
 );
+Stupid::set_default_action(function() { throw new Exception404('Unknown resource.'); } );
 
-Stupid::set_default_action(create_function('', 'require(dirname(__FILE__) . "/web/not_found.php");'));
-Stupid::chain_reaction();
+try {
+	Stupid::chain_reaction();
+}catch (Exception404 $e) {
+	header('404 Not Found');
+	echo '<h1>404 Not Found</h1>';
+	echo tag('p', $e->getMessage());
+	exit;
+}catch (Exception $e){
+	header('500 Internal Server Error');
+	echo '<h1>5005 Internal Server Error</h1>';
+	exit;
+}
 

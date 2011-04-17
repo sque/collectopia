@@ -232,6 +232,7 @@ class Output_HTML_Form
         - renderonconstruct [Default = false] The form is render immediatly at the constructor of the Form. If
             you set it false you can render the form using render() function of the created object at any
             place in your page.
+        - checkformid [Default = true] Wheter or not to process the form if it has a valid checkformid. 
         .\n\n
     @par Example:
     @code
@@ -295,7 +296,8 @@ class Output_HTML_Form
         	'css' => array('ui-form'),
         	'hideform' => false,
         	'renderonconstruct' => false,
-        	'buttons' => array('submit' => array())
+        	'buttons' => array('submit' => array()),
+        	'checkformid' => true
         );
         $this->options = array_merge($default_options, $this->options);
             
@@ -361,9 +363,9 @@ class Output_HTML_Form
     private function process_post()
     {   
         // Check if the form is posted
-        if ((!isset($_POST['submited_form_id'])) ||
-            ($_POST['submited_form_id'] != $this->form_id))
-        {
+    	if (($_SERVER['REQUEST_METHOD'] == 'GET') 
+    		|| (($this->options['checkformid']) 
+    			&& (!Net_HTTP_RequestParam::is_equal('submited_form_id', $this->form_id, 'post')))) {
             // Call user function when there is no post
             if (method_exists($this, 'on_nopost'))
                 $this->on_nopost();
@@ -434,6 +436,10 @@ class Output_HTML_Form
 			{
 			    // Store values for classic elements
                 $field['value'] = $_POST[$k];
+			}
+			else
+			{
+				$field['value'] = null;
 			}
 			
             // Regcheck
@@ -555,6 +561,12 @@ class Output_HTML_Form
         if(!isset($this->fields[$fname]))
             return false;
         return $this->fields[$fname];
+    }
+   
+    //! Get all fields
+    public function get_fields()
+    {   
+        return $this->fields;
     }
     
     //! Change the display text of a field
@@ -723,5 +735,3 @@ class Output_HTML_Form
         $this->options['hideform'] = true;
     }
 }
-
-?>

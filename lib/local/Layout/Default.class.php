@@ -54,25 +54,25 @@ class Layout_Default extends Layout
         $this->get_document()->add_ref_css(surl('/static/css/default.css'));
         $this->get_document()->add_ref_css(surl('/static/css/ui-lightness/jquery-ui.css'));
         $this->get_document()->add_ref_css(surl('/static/fileupload/jquery.fileupload-ui.css'));
+        $this->get_document()->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
+        
         $this->get_document()->add_ref_js(surl('/static/js/jquery-1.4.4.min.js'));
         $this->get_document()->add_ref_js(surl('/static/js/jquery-ui-1.8.6.custom.min.js'));
 		$this->get_document()->add_ref_js(surl('/static/fileupload/jquery.fileupload.js'));
 		$this->get_document()->add_ref_js(surl('/static/fileupload/jquery.fileupload-ui.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/jquery-createEl.js'));        
-        $this->get_document()->add_ref_js(surl('/static/js/core.js'));
+        $this->get_document()->add_ref_js(surl('/static/js/jquery-createEl.js'));
         $this->get_document()->add_ref_js('http://maps.google.com/maps/api/js?sensor=false');
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/api.js'));
+		$this->get_document()->add_ref_js(surl('/static/js/collectopia/ui.js'));
         $this->get_document()->add_ref_js(surl('/static/js/collectopia/map.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panelsystem.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel.js'));        
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/createplace.js'));
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panels.js'));
+        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/addplace.js'));
         $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/info.js'));
         
         // Jquery cycle
         $this->get_document()->add_ref_js(surl('/static/jcycle/jquery.cycle.all.min.js'));
         
         // Jquery Fancy
-        $this->get_document()->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
-        
         $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.easing-1.3.pack.js'));
         $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.mousewheel-3.0.4.pack.js'));        
         $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.fancybox-1.3.4.pack.js'));
@@ -97,6 +97,7 @@ class Layout_Default extends Layout
         
         etag('script type="text/javascript" html_escape_off', "
         $(document).ready(function() {
+        	collectopia.api.init('" . surl('/') . "');
 			map = new collectopia.Map($('#content'), " . json_encode($categories) . ");
 		});
         ");
