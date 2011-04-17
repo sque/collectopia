@@ -59,7 +59,7 @@ function place_new(){
 	sleep(1.5);
 	Layout::open('default')->deactivate();	
 	$pef = new PlaceEditForm();
-	$pef->json_render();	
+	$pef->json_render();
 }
 
 function place_id_edit($pid){
@@ -68,9 +68,8 @@ function place_id_edit($pid){
 		
 	sleep(1.5);
 	Layout::open('default')->deactivate();
-	$frm = new UI_PlaceEditForm($p);
-	header('Content-type: application/json');
-	echo json_encode($frm->get_fields());
+	$pef = new PlaceEditForm($p);
+	$pef->json_render();
 }
 
 function place_id_rate($id) {

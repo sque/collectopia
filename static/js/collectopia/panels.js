@@ -45,7 +45,7 @@ collectopia.PanelSystem = function() {
 		if (pthis._private_.status.enabledKeyboardEvents) {
 			switch (e.keyCode){
 			case 27:
-				var f = pthis.focused();
+				var f = pthis.getFocused();
 				if (f)
 					f.close();
 				break;
@@ -84,7 +84,7 @@ collectopia.PanelSystem.prototype.registerPanel = function(p) {
 	this.switchExposeOff();
 	
 	// Blur last
-	var f = this.focused();
+	var f = this.getFocused();
 	if (collectopia.isDefined(f))
 		f.events.triggerHandler('blur', { panel: f});
 
@@ -116,7 +116,7 @@ collectopia.PanelSystem.prototype.unregisterPanel = function(p) {
 /**
  * Get the focused window
  */
-collectopia.PanelSystem.prototype.focused = function() {
+collectopia.PanelSystem.prototype.getFocused = function() {
 	if (this.zorder.length == 0)
 		return;
 	return this.all_panels[this.zorder[this.zorder.length - 1]];
@@ -138,7 +138,7 @@ collectopia.PanelSystem.prototype.bringToFront= function(panel_id) {
 		return; // Already panel to foreground
 	
 	// Blur actual focused panel
-	infront = this.focused();
+	infront = this.getFocused();
 	infront.events.triggerHandler('blur', { panel: infront});
 	
 	// Reorder things
@@ -147,7 +147,7 @@ collectopia.PanelSystem.prototype.bringToFront= function(panel_id) {
 	this._private_.update_css_zindex();
 	
 	// Focus event
-	infront = this.focused();
+	infront = this.getFocused();
 	infront.events.triggerHandler('focus', { panel: infront});
 };
 
@@ -181,7 +181,7 @@ collectopia.PanelSystem.prototype.switchExposeOn = function() {
 	
 	// Send blur event on current focus
 	if (this.zorder.length)
-		this.focused().events.triggerHandler('blur', this.focused());
+		this.getFocused().events.triggerHandler('blur', this.getFocused());
 	
 	// Expose related change event
 	this.events.triggerHandler('expose-changed', { enabled : true });
@@ -214,7 +214,7 @@ collectopia.PanelSystem.prototype.switchExposeOff = function() {
 	
 	// Send focus event on last focused
 	if (this.zorder.length)
-		this.focused().events.triggerHandler('focus', this.focused());
+		this.getFocused().events.triggerHandler('focus', this.getFocused());
 
 	// Expose related change event
 	this.events.triggerHandler('expose-changed', { enabled : false });
@@ -280,9 +280,10 @@ collectopia.Panel = function(type, title, actions, parent) {
 	this.events = $(this);
 	
 	// Add actions
-	if (typeof(actions) != 'undefined') {
-		$.each(actions, function(){
-			pthis.addAction(this.title, this.callback);
+	this.actions = {};
+	if (collectopia.isDefined(actions)) {
+		$.each(actions, function(name){
+			pthis.addAction(name, this.title, this.callback);
 		});
 	}
 	
@@ -311,10 +312,35 @@ collectopia.Panel = function(type, title, actions, parent) {
  * @param title The title of the action or an element to add.
  * @param callback A function to callback when finished.
  */
-collectopia.Panel.prototype.addAction = function(title, callback) {
-	var ul = this.dom.find('ul.actions');
+collectopia.Panel.prototype.addAction = function(name, title, callback) {
+	var ul = this.dom.find('ul.actions'), pthis = this;
 	var title_el = collectopia.isString(title)?$('<a href="#"/>').text(title):title;
-	ul.append($('<li/>').append(title_el.click(callback)));
+	ul.append($('<li/>').attr('name', name).append(title_el.click(function(event){
+		callback.call(pthis, event);
+	})));
+};
+
+/**
+ * Remove an action from the panel
+ */
+collectopia.Panel.prototype.removeAction = function(name) {
+	this.dom.find('ul.actions li[name='+ name + ']').remove();
+	delete this.actions['name'];
+};
+
+/**
+ * Get all actions of this panel
+ */
+collectopia.Panel.prototype.getActions = function() {
+	return this.actions;
+};
+
+/**
+ * Remove all actions from this panel
+ */
+collectopia.Panel.prototype.clearActions = function() {
+	this.actions = {};
+	this.dom.find('ul.actions').html('');
 };
 
 /**

@@ -30,6 +30,11 @@ div#content {
 	height: 100%;*/
 }
 
+.logo {
+	position: absolute;
+	right: 12px;
+	top: 8px;
+}
 
 .widget {	
 	padding: 15px;
@@ -245,97 +250,6 @@ div#content {
 
 }
 	
-.panel.info ul.info{
-	list-style-type: none;
-	padding: 0px;
-	margin: 0px;	
-}
-
-.panel.info ul.info label{
-	font-weight: bold;
-}
-
-.panel.info .description{
-	padding: 2px;
-	font-size: 9pt;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    max-height: 400px;
-    overflow: auto;
-}
-
-.panel.info ul.categories{
-	margin: 0px;
-	padding: 3px 3px 0px 0px;
-	list-style-type: none;
-	position: absolute;
-    right: 25px;
-    top: -32px;
-    border: 2px solid #dedede;
-    border-bottom: none;
-    background-color: white;
-}
-
-.panel.info ul.categories li{
-	display: inline-block;
-	margin-left: 5px;
-}
-
-
-.panel .photos {
-	left: 0px;
-	width: 160px;
-	text-align: center;
-	float: left;
-}
-.panel .photos .gallery a{
-	display: block;
-	width: 160px;
-	height: 121px;
-	background-color: white;
-}
-
-.panel .photos  .gallery a img{
-	display: block;
-	margin: 0px auto;
-	border: 3px solid #9a9a9a;
-	border-radius: 3px;
-}
-
-.panel .photos .pager{
-	display: inline-block;
-}
-
-.panel .photos .pager a{
-	display: inline-block;
-	background: transparent url('images/pager-dot.png') no-repeat center center;
-	width: 8px;
-	height: 8px;
-}
-
-.panel .photos .pager a.activeSlide{
-	background-image: url('images/pager-dot-active.png');
-}
-
-
-.panel .video{
-	margin: 15px 15px 15px 0px;		
-	float: right;
-}
-
-.panel .video a{
-	position: relative;
-	display: inline-block;
-}
-
-.panel .video a .watermark{
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
-	background: transparent url('images/play-button-icon.png') no-repeat center center;
-}
 /** search **/
 .widget.search ul.results {
 	margin: 0px;
@@ -428,7 +342,7 @@ ul.rating.selected li{
 	cursor: auto;
 }
 
-/** Form **/
+/** Component Form **/
 .ui-form ul.fields {
 	list-style-type: none;
 	padding: 0px;
@@ -442,13 +356,14 @@ ul.rating.selected li{
 .ui-form ul.fields label {
 	display: block;
 	font-weight: bold;
+	color: #656565;
 }
 
 .ui-form .ui-form-error {
 	color: #dd0000;
 }
 
-/** Place editor **/
+/** Component Place editor **/
 
 .place-editor {
 	min-height: 300px;
@@ -462,6 +377,10 @@ ul.rating.selected li{
 .place-editor textarea,
 .place-editor input{
 	width: 98%;
+	background-color: #F1F1F1;
+	font-weight: bold;
+	font-family: Trebuchet MS;
+	font-size: 1.1em;
 }
 
 .place-editor ul.categories{
@@ -471,15 +390,14 @@ ul.rating.selected li{
 }
 .place-editor ul.categories li {
 	cursor: pointer;
-	/*border: 1px solid #979797;*/
 	display: inline-block;
-	padding: 3px 5px;
+	padding: 5px 5px 0 20px;
 	margin-right: 5px;
 	color: #454545;
 	width: 130px;
 	position: relative;
 	padding-left: 20px;
-	line-height: 12px;
+	line-height: 6px;	
 }
 
 .place-editor ul.categories li .checkbox{
@@ -558,4 +476,102 @@ ul.rating.selected li{
 
 .place-editor .photos-grid td{
 	padding: 0px;
+}
+
+
+
+/** Component Place Viewer **/
+
+.place-viewer h3.name {
+	margin: 2px 0px;
+	font-size: 1.3em;
+	color: #b77d22;
+}
+.place-viewer ul.info{
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;	
+}
+
+.place-viewer ul.info label{
+	font-weight: bold;
+}
+
+.place-viewer .description{
+	padding: 2px;
+	font-size: 9pt;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.place-viewer ul.categories{
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+	position: absolute;
+    right: 25px;
+    top: -27px;
+}
+
+.place-viewer ul.categories li{
+	display: inline-block;
+	margin-left: 5px;
+}
+
+
+.place-viewer .photos {
+	left: 0px;
+	width: 160px;
+	text-align: center;
+	float: left;
+}
+.place-viewer .photos .gallery a{
+	display: block;
+	width: 160px;
+	height: 121px;
+	background-color: white;
+}
+
+.place-viewer .photos  .gallery a img{
+	display: block;
+	margin: 0px auto;
+	border: 3px solid #9a9a9a;
+	border-radius: 3px;
+}
+
+.place-viewer .photos .pager{
+	display: inline-block;
+}
+
+.place-viewer .photos .pager a{
+	display: inline-block;
+	background: transparent url('images/pager-dot.png') no-repeat center center;
+	width: 8px;
+	height: 8px;
+}
+
+.place-viewer .photos .pager a.activeSlide{
+	background-image: url('images/pager-dot-active.png');
+}
+
+
+.place-viewer .video{
+	margin: 15px 15px 15px 0px;		
+	float: right;
+}
+
+.place-viewer .video a{
+	position: relative;
+	display: inline-block;
+}
+
+.place-viewer .video a .watermark{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	background: transparent url('images/play-button-icon.png') no-repeat center center;
 }

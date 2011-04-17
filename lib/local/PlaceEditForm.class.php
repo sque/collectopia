@@ -18,16 +18,16 @@ class PlaceEditForm extends JsonForm
     	
     	// Prepare all fields
         $fields =  array(
-        	'short_name' => array('display' => 'Short Name', 'regcheck' => '/^.{1,12}$/',
-        		'hint' => 'A short name less than 12 characters.',
+        	'short_name' => array('display' => 'Marker Name', 'regcheck' => '/^.{1,12}$/',
         		'onerror' => 'Short name must be between 3 and 12 characters.',
         		'htmlattribs' => array('maxlength' => 12)),
-        	'name' => array('display' => 'Long name', 'regcheck' => '/^.{3,}$/',
+        	'name' => array('display' => 'Official name', 'regcheck' => '/^.{3,}$/',
         		'onerror' => 'Give a title of the place.'),
 			'email' => array('display' => 'E-mail'),
         	'web' => array('display' => 'Website'),
         	'tel' => array('display' => 'Phone'),
-        	'video' => array('display' => 'Video URL', 'hint' => 'Give a vimeo or youtube url with the video you want.'),
+        	'video' => array('display' => 'Video URL (YouTube/Vimeo)',
+        		/*'hint' => 'Give a vimeo or youtube url with the video you want.'*/),
 			'description' => array('display' => 'Description', 'type' => 'textarea',
         		'regcheck' => '/^.{10,}/', 'onerror' => 'Give a description of the place.'),
         	'photos' => array('type' => 'hidden', 'value' => ''),

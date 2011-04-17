@@ -193,9 +193,12 @@ collectopia.Map.prototype.drawPlaces = function() {
 		});
 		var pthis = this;
 		google.maps.event.addListener(place.marker, 'click', function() {
-			if (this.place.infopanel == undefined)
+			if (this.place.infopanel == undefined) {
 				this.place.infopanel = new collectopia.InfoPanel(pthis, this.place);
-			else
+				this.place.infopanel.events.bind('closed', function(event){
+					delete this.place.infopanel;
+				});
+			}else
 				this.place.infopanel.bringToFront();
 		});
 	};

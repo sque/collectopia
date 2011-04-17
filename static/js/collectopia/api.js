@@ -359,6 +359,30 @@ collectopia.api.Place.prototype.reqUpdate = function(on_success, on_error) {
 };
 
 /**
+ * Request the Form from the server for the update action.
+ * @param on_success (form) A callback to be called if the form was successfully retrievd.
+ * @param on_error A callback to be called on error.
+ * @returns {collectopia.api.Place} Chainable action
+ */
+collectopia.api.Place.prototype.reqUpdateForm = function(on_success, on_error) {
+	
+	// Otherwise request
+	var place = this;
+	jQuery.ajax({
+		  type: 'GET',
+		  url: collectopia.api.furl('/api/place/@' + this.id + '/+edit'),
+		  success: function(data){
+			  if (collectopia.isFunction(on_success)) {
+				  // Cache response
+				  on_success.call(place, new collectopia.api.Form(data, place, 'reqUpdate'));
+			  }
+		  },
+		  error: on_error
+		});
+	return this;
+};
+
+/**
  * Request to delete this place on the server
  * @param on_success (place) A callback to be called if it is successfully deleted
  * @param on_error A callback to be called on error.
@@ -388,18 +412,19 @@ collectopia.api.Place.prototype.reqDelete = function(on_success, on_error) {
  * @returns {collectopia.api.Place} Chainable action
  */
 collectopia.api.Place.prototype.reqRate = function(score, on_success, on_error) {
-	if (typeof this.id != undefined)
+	if (!collectopia.isDefined(this.id))
 		return false;
 	
+	var place = this;
 	jQuery.ajax({
 	  type: 'POST',
 	  url: collectopia.api.furl('/api/place/@' + escape(this.id) + '/+rate'),
 	  data: { id : this.id, rate: score },
 	  success: function(reply){
-		  place._process_reply_place(reply, on_success, on_error);		  
+		  place._process_reply_place(reply, on_success, on_error);
 	  },
 	  error: function(jqXHR, textStatus){
-		  place._process_fail(textStatus, on_error);		  
+		  place._process_fail(textStatus, on_error);
 	  }
 	});
 	return this;

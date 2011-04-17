@@ -227,7 +227,7 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 
 	// Ask for the needed form
 	ped.events.triggerHandler('ajax.start');
-	this.place[this.mode_create?'reqCreateForm':'reqEditForm'](function(form_data){
+	this.place[this.mode_create?'reqCreateForm':'reqUpdateForm'](function(form_data){
 		ped.form = new collectopia.ui.PlaceEditor.Form(form_data);
 		ped.form.attachTo(dom);
 		
@@ -268,12 +268,6 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 		/* Add photo management support */
 		var ui_show_uploads = function() {
 			dom.addClass('show-uploads').parents('.panel').animate({ width : 542 });
-			/*dom.find('td.right-row').resize(function(e) {
-				td = $(this);
-				td.find('> div').height(td.height());
-				console.log('resize', e);
-			});
-			dom.find('td.right-row').triggerHandler('resize');*/			
 		};
 		
 		var create_upload_row = function(thumb_url, photo, delete_callback) {
@@ -284,6 +278,7 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
             		'</td></tr>');
             a.find('.fname div').text(photo.name);
             a.find('img').attr('src', thumb_url);
+            a.find('button').data('photo', photo).data('row', a).click(delete_callback);
             return a;
 		};
 		
@@ -298,10 +293,13 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 		if (collectopia.isObject(ped.place.photos) && (ped.place.photos.length)) {
 			ui_show_uploads();
 			$.each(ped.place.photos, function() {
-				console.log(dom.find('.photos-grid'));
 				var row = create_upload_row(
-						this.getUrl(),						
-						this
+						this.getThumbUrl(48, 48),						
+						this, function(event){
+							var t = $(this), row = t.data('row'), photo = t.data('photo');							
+							row.hide('fast', function(){ row.remove(); }); 
+			            	ped.form.detachPhoto(photo.id);
+						}
 				).appendTo(dom.find('.photos-grid'));
 			});
 		}
@@ -562,4 +560,170 @@ collectopia.ui.PlaceEditor.Form.prototype.setGeocode = function(results) {
 	
 	this.setField('pos_address', results.formatted_address);
 	this.getDom().find('.address > div').text(results.formatted_address);
+};
+
+/* --------------------------------------------------------------------*/
+
+/**
+ * A complete Place Viewer Component
+ * @param place The place we are viewing
+ */
+collectopia.ui.PlaceViewer = function(place) {
+	collectopia.ui.Component.call(this);
+
+	this.place = place;
+};
+collectopia.ui.PlaceViewer.prototype = jQuery.extend({}, collectopia.ui.Component.prototype);
+collectopia.ui.PlaceViewer.prototype.constructor = collectopia.ui.PlaceViewer;
+
+/**
+ * Dom builder for the PlaceViewer
+ * @returns
+ */
+collectopia.ui.PlaceViewer.prototype.buildDom = function(){
+	var viewer = this,
+		place = viewer.place;
+	
+	var dom = $('<div class="component place-viewer"/>');
+	
+	// Show general information
+	dom.createEl('h3', { class : 'name' }).text(place.name);
+	var info_ul = dom.createEl('ul', {class: 'info'});	
+	var show_place_info_field = function(field, title){
+		if (place[field])
+			info_ul.createEl('li')
+				.createEl('label').text(title + ': ')
+				.parent().createEl('span').text(place[field]);
+	};	
+	show_place_info_field('country', 'Country');
+	show_place_info_field('city', 'City');
+	show_place_info_field('address', 'Address');
+	show_place_info_field('email', 'eMail');
+	show_place_info_field('web', 'www');
+	
+	// Show categories
+	var cats_ul = dom.createEl('ul', { class: 'categories'});
+	for(var i in place.categories) {
+		var cat = place.categories[i];
+		cats_ul.createEl('li').createEl('img', 
+			{ src : 'static/images/cat_' + cat + '_24.png',
+				title : map.categories[cat].title }
+		);
+	}
+	
+	// Show ratings
+	var rating_span = dom.createEl('div', { class : 'rating'});
+	var rating = rating_span.createEl('ul', { class : 'rating current-' + Math.round(place.rate_current)});
+	for(var i = 0; i< 5; i++)
+		rating.createEl('li', { class: 'rate-' + (i+1), rate: (i+1)}).text(' ');
+	rating.find('li').hover(
+		function(event){
+			$(this).addClass('hover').prevAll().addClass('hover');
+		}, function() {
+			$(this).parent().find('li').removeClass('hover');
+		})
+		.click(function(){
+			place.reqRate($(this).attr('rate'), function(){
+				rating.attr('class', 'rating selected current-' + Math.round(place.rate_current))
+				.find('li').removeClass('hover').unbind('mouseover').unbind('mouseout').unbind('click');
+				rating_span.find('.textual .total .number').text(place.rate_total);
+				rating_span.find('.textual .score').text(parseFloat(place.rate_current).toFixed(1));
+			});			
+		});
+	rating_span.createEl('span', { class : 'textual'})
+		.createEl('span', {class : 'score'}).text(place.rate_current.toFixed(1)).parent()
+		.createEl('span', {class : 'total'})
+			.append('(')
+			.append($('<span class="number"/>').text(place.rate_total))
+			.append(' votes)');
+	
+	// Show pictures
+	dom.createEl('hr');
+	var media_div = dom.createEl('div', { class : 'media'});
+	var video_present = Boolean(place.video != '');
+	var photos_present = Boolean(place.photos.length);
+	var media_present = video_present || photos_present;
+	
+	// Photos
+	if (photos_present) {
+		var cont = media_div.createEl('div', { class : 'photos'});
+		var gal = cont.createEl('div', {class : 'gallery'});
+		for(var i in place.photos)
+			gal.createEl('a', { rel : 'photos_place_' + this.place.id, 'href' : place.photos[i].getUrl(), target: '_blank'})
+				.createEl('img', { src : place.photos[i].getThumbUrl()});
+		var pager;
+		cont.append(pager = $('<div class="pager" id="photos_nav_' + escape(String(this.place.id)) + '" >'));		
+		
+		gal.find('a').fancybox({
+			'speedIn'		:	600, 
+			'speedOut'		:	200, 
+			'overlayShow'	:	false,
+			'onStart' : function(){
+				collectopia.panels.enableKeyboardEvents(false);
+				gal.cycle('pause');
+			},
+			'onClosed' : function(){
+				collectopia.panels.enableKeyboardEvents(true);
+				gal.cycle('resume');
+			}
+		});
+		
+		// Cycle box does not work on detached DOM on chrome
+		this.getEvents().bind('attached', function(event){
+			gal.cycle({ 
+			    fx:     'scrollLeft', 
+			    timeout: 5000,
+			    pager:  pager,
+			    pagerAnchorBuilder: function(index, dom) {
+			    	return '<a href="#"> </a>';
+			    }
+			 });
+		});
+		this.getEvents().bind('detached', function(event){
+			gal.cycle('destroy');			    
+		});
+	} else if (media_present) {
+		media_div.createEl('div', { class : 'photos empty' })
+			.createEl('img', { src : 'static/css/images/no_photos.jpg'});
+	}
+	
+	// Video
+	if (video_present){
+		var video = place.video.split(':'),
+			img_url;
+		if (video[0] == 'youtube') {
+			img_url = 'http://img.youtube.com/vi/' + video[1] + '/1.jpg';
+			swf_url = 'http://www.youtube-nocookie.com/v/' + video[1] + '?autoplay=1&fs=1';
+		}
+		
+		// Create elements
+		var v = media_div.createEl('div', { class : 'video ' + video[0] })
+			.createEl('a', { href : swf_url });		
+		v.createEl('img', { src : img_url });
+		v.createEl('div', { class: 'watermark'});
+		
+		media_div.find(".video a").fancybox({
+	        'titleShow'     : false,
+	        'transitionIn'  : 'elastic',
+	        'transitionOut' : 'elastic',
+	        'type' : 'swf',
+	        'swf' : {'wmode':'transparent','allowfullscreen':'true'},
+			'onStart' : function(){
+				collectopia.panels.enableKeyboardEvents(false);
+			},
+			'onClosed' : function(){
+				collectopia.panels.enableKeyboardEvents(true);
+			}
+		});
+	} else if (media_present){
+		media_div.createEl('div', { class : 'video empty' })
+			.createEl('img', { src : 'static/css/images/no_video.jpg'});
+	}
+	media_div.createEl('div', { class: 'spacer', style : 'clear: both;' });
+
+	// Description
+	dom.createEl('div', { class : 'description'})
+		.text(place.description);
+	dom.createEl('div', { class: 'spacer', style : 'clear: both;' });
+	return dom;
 };

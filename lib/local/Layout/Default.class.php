@@ -50,6 +50,7 @@ class Layout_Default extends Layout
     {   
         $this->activate();
         $doc = $this->get_document();    
+        $this->get_document()->add_favicon(surl('/static/images/favicon_32.png'));
         $this->get_document()->title = Registry::get('site.title');
         $this->get_document()->add_ref_css(surl('/static/css/default.css'));
         $this->get_document()->add_ref_css(surl('/static/css/ui-lightness/jquery-ui.css'));
@@ -82,14 +83,16 @@ class Layout_Default extends Layout
     	$style = '';
     	foreach($categories = Category::open_all_to_array() as $cat)
 	    	$style .= "
-	    	.panel.place-new ul.categories li.{$cat['tag']} .checkbox{	border-color: #{$cat['color']}; }
-			.panel.place-new ul.categories li.{$cat['tag']}.enabled .checkbox{	background-color: #{$cat['color']};	}
+	    	.place-editor ul.categories li.{$cat['tag']} .checkbox{	border-color: #{$cat['color']}; }
+			.place-editor ul.categories li.{$cat['tag']}.enabled .checkbox{	background-color: #{$cat['color']};	}
 	    	";
     	$doc->get_head()->append(tag('style', $style));
         
         etag('div id="wrapper"')->push_parent();
         etag('div id="map-canvas"');
-        $def_content = etag('div id="content');
+        $def_content = etag('div id="content',
+        	tag('div class="logo"', tag('img', array('src' => surl('/static/images/logo.png')))));
+        
         etag('div id="panels"',
         	tag('div class="info"')
         );		
