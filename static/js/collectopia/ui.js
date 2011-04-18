@@ -260,7 +260,7 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 					li.toggleClass('enabled');
 					update_cat_form_field();
 				});
-			if (collectopia.isDefined(ped.place.categories) && (ped.place.categories.indexOf(cat) >= 0))
+			if (collectopia.isDefined(ped.place.categories) && (ped.place.categories.indexOf(cat.tag) >= 0))
 				li.addClass('enabled');
 		}
 
@@ -431,6 +431,7 @@ collectopia.ui.PlaceEditor.prototype.getGoogleMarker = function() {
 		type : 'poly'
 	};
 
+	var loc = this.form.getLocation();
 	return marker = new google.maps.Marker({
 		draggable : true,
 		raiseOnDrag : true,
@@ -438,7 +439,7 @@ collectopia.ui.PlaceEditor.prototype.getGoogleMarker = function() {
 		shadow : shadow,
 		shape : shape,
 		map : map.google.map,
-		position : map.google.map.getCenter()
+		position : collectopia.isDefined(loc)?new google.maps.LatLng(loc.lat, loc.lng):map.google.map.getCenter()
 	});
 };
 
@@ -461,7 +462,8 @@ collectopia.ui.PlaceEditor.Form = function(data, options) {
 	
 	// Hook on error to be more descriptive
 	this.events.bind('error', function(event, error){
-		if (collectopia.isDefined(error.fields.loc_lat) || collectopia.isDefined(error.fields.loc_lng)) {
+		if ((collectopia.isDefined(error.fields))
+				&& (collectopia.isDefined(error.fields.loc_lat) || collectopia.isDefined(error.fields.loc_lng))) {
 			error.fields.address = error.fields.loc_lat;
 		}
 	});
@@ -512,6 +514,19 @@ collectopia.ui.PlaceEditor.Form.prototype.setLocation = function(loc) {
 		this.setField('loc_lat', '');
 		this.setField('loc_lng', '');
 	}
+};
+
+/**
+ * Get the location in longitude and latitude.
+ * @return {Object} With the position of this place or undefined if it is unknown
+ */
+collectopia.ui.PlaceEditor.Form.prototype.getLocation = function(){
+	if (!Boolean(this.getField('loc_lat')) && !Boolean(this.getField('loc_lng')))
+		return undefined;
+	return {
+		lng : parseFloat(this.getField('loc_lng')),
+		lat : parseFloat(this.getField('loc_lat'))
+	};
 };
 
 /**

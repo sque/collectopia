@@ -7,6 +7,10 @@
  */
 class PlaceEditForm extends JsonForm
 {
+	private $db_to_form_fields;
+	
+	private $form_to_db_fields;
+	
 	/**
 	 * Create a new edit/create form.
 	 * @param Image $place If this is an edit form, then supply the place,
@@ -15,6 +19,27 @@ class PlaceEditForm extends JsonForm
     public function __construct($place = null)
     {
     	$this->place = $place;
+    	
+    	// DB fields and their form equivalent
+    	$this->db_to_form_fields = array(
+    	    'short_name' => 'short_name',
+    		'name' => 'name',
+    		'description' => 'description',
+    		'loc_lat' => 'loc_lat',
+    		'loc_lng' => 'loc_lng',
+    		'country' => 'pos_country',
+    		'area_level_2' => 'pos_administrative_area_level_2',
+    		'area_level_1' => 'pos_administrative_area_level_1',
+    		'city' => 'pos_city',
+    		'street' => 'pos_street',
+    		'street_number' => 'pos_street_number',
+    		'address' => 'pos_address',
+    		'email' => 'email',
+    		'web' => 'web',
+    		'video' => 'video'
+    	);
+    	foreach($this->db_to_form_fields as $k => $v)
+    		$this->form_to_db_fields[$v] = $k;
     	
     	// Prepare all fields
         $fields =  array(
@@ -63,11 +88,19 @@ class PlaceEditForm extends JsonForm
         	}
         	
         	// Add place photos
-        	$fields['photos']['value'] = array();
+        	$photos = array();
         	foreach($place->photos->all() as $photo) {
         		$photo->generate_thumb(48, 48);
-        		$fields['photos']['value'][] = $photo->toArray();
+        		$photos[] = $photo->id;
         	}
+        	$fields['photos']['value'] = implode(',', $photos);
+        	
+	        // Add place photos
+	        $cats = array();        	
+        	foreach($place->categories->all() as $cat) {
+        		$cats[] = $cat->tag;
+        	}
+        	$fields['categories']['value'] = implode(',', $cats);
         }
         
         // Call standard parent
@@ -93,23 +126,10 @@ class PlaceEditForm extends JsonForm
     public function create_place($values)
     {
        	// Add the place
-    	$place = Place::create(array(
-    		'short_name' => $values['short_name'],
-    		'name' => $values['name'],
-    		'description' => $values['description'],
-    		'loc_lat' => $values['loc_lat'],
-    		'loc_lng' => $values['loc_lng'],
-    		'country' => $values['pos_country'],
-    		'area_level_2' => $values['pos_administrative_area_level_2'],
-    		'area_level_1' => $values['pos_administrative_area_level_1'],
-    		'city' => $values['pos_city'],
-    		'street' => $values['pos_street'],
-    		'street_number' => $values['pos_street_number'],
-    		'address' => $values['pos_address'],
-    		'email' => $values['email'],
-    		'web' => $values['web'],
-    		'video' => $values['video']
-    	));
+       	$place_data = array();
+       	foreach($this->form_to_db_fields as $ffrm => $fdb)
+       		$place_data[$fdb] = $values[$ffrm];
+    	$place = Place::create($place_data);
     	
     	if (! $place ) {
     		echo json_encode(array('error' => 'Cannot create this place'));
@@ -140,14 +160,17 @@ class PlaceEditForm extends JsonForm
     public function update_place($values) 
     {
     	// Update all fields of this place
-    	foreach($values as $k => $v) {
-    		if (!isset($this->place->$k)) {
+    	foreach($this->form_to_db_fields as $ffrm => $fdb) {
+    		if (!isset($this->place->$fdb)) {
     			error_log("Place does not have field ${k}");
     			continue;
     		}
     		
-    		$this->place->$k = $v;
+    		$this->place->$fdb = $values[$ffrm];
     	}
+    	
+    	// Update categories
+    	
     	$this->place->save();
     	
     	// Return the place

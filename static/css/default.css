@@ -342,6 +342,18 @@ ul.rating.selected li{
 	cursor: auto;
 }
 
+/** HelpPanel **/
+.panel.help {
+	
+}
+
+.panel.help iframe {
+	width: 99%;
+	height: 500px;
+	border: none;
+	margin-top: 7px;
+}
+
 /** Component Form **/
 .ui-form ul.fields {
 	list-style-type: none;

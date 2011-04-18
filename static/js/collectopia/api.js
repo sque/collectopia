@@ -214,6 +214,8 @@ collectopia.api.Place.prototype.getData = function() {
 			continue;
 		if (i == 'options')
 			continue;
+		if (i[0] == '_')
+			continue;	// Skip private data
 		data[i] = this[i];
 	}	   
 	return jQuery.extend(true, {}, data);
@@ -343,9 +345,10 @@ collectopia.api.Place.prototype.reqUpdate = function(on_success, on_error) {
 	if (!collectopia.isDefined(this.id))
 		return false;
 	
+	var place = this;
 	jQuery.ajax({
 	  type: 'POST',
-	  url: collectopia.api.furl('/api/place/@' + escape(this.id) + '/+edit'),
+	  url: collectopia.api.furl('/api/place/@' + this.id + '/+edit'),
 	  data: this.getData(),
 	  success: function(reply){
 		  place.options['skip_marker_cache'] = true;

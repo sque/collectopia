@@ -22,62 +22,52 @@
 
 class Layout_Default extends Layout
 {
-    private $mainmenu = null;
-    
-    public function get_mainmenu()
-    {
-        return $this->mainmenu;
-    }
-
-
-    private function init_menu()
-    {
-        $this->mainmenu = new SmartMenu(array('class' => 'menu'));
-        $this->events()->connect('pre-flush', create_function('$event',
-        '
-            $layout = $event->arguments["layout"];
-           
-            $layout->get_document()->get_body()->getElementById("main-menu")
-                ->append($layout->get_mainmenu()->render());
-        '));
-
-        $this->mainmenu->create_link('Home', '/')->set_autoselect_mode('equal');
-        $this->mainmenu->create_link('Section 1', '/section1');
-        $this->mainmenu->create_link('Section 2', '/section2');
-    }
     
     protected function __init_layout()
     {   
         $this->activate();
         $doc = $this->get_document();    
-        $this->get_document()->add_favicon(surl('/static/images/favicon_32.png'));
-        $this->get_document()->title = Registry::get('site.title');
-        $this->get_document()->add_ref_css(surl('/static/css/default.css'));
-        $this->get_document()->add_ref_css(surl('/static/css/ui-lightness/jquery-ui.css'));
-        $this->get_document()->add_ref_css(surl('/static/fileupload/jquery.fileupload-ui.css'));
-        $this->get_document()->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
+        
+        // Meta data
+        $doc->title = 'Collectopia';
+        $doc->add_meta('The site aims to function as an open platform to map collectives, places that can ' .
+        	'be used public and common spaces worldwide which can be used in a no budget and free way.',
+        	array('name' => 'description'));
+        $doc->add_meta('collectopia,espiv.net,map,alternative,commons,collectives,autonomous,spaces,' .
+        	'autonomous spaces,free food,free,free stuff,free clothes,free entertainment,left,dumpster,' .
+        	'free accomodation,free concert, self-organised,self organised,europe,squat,creative,reduce,' .
+        	'reuse,recycle,free travel,collecting commons,anti consumption,consumotion,consumerism,public,open',        
+        	array('name' => 'keywords'));    
         
         
-        $this->get_document()->add_ref_js(surl('/static/js/jquery-1.4.4.min.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/jquery-ui-1.8.6.custom.min.js'));
-		$this->get_document()->add_ref_js(surl('/static/fileupload/jquery.fileupload.js'));
-		$this->get_document()->add_ref_js(surl('/static/fileupload/jquery.fileupload-ui.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/jquery-createEl.js'));
-        $this->get_document()->add_ref_js('http://maps.google.com/maps/api/js?sensor=false');
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/api.js'));
-		$this->get_document()->add_ref_js(surl('/static/js/collectopia/ui.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/map.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panels.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/addplace.js'));
-        $this->get_document()->add_ref_js(surl('/static/js/collectopia/panel/info.js'));
+        $doc->add_favicon(surl('/static/images/favicon_32.png'));        
+        $doc->add_ref_css(surl('/static/css/default.css'));
+        $doc->add_ref_css(surl('/static/css/ui-lightness/jquery-ui.css'));
+        $doc->add_ref_css(surl('/static/fileupload/jquery.fileupload-ui.css'));
+        $doc->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
+        
+        
+        $doc->add_ref_js(surl('/static/js/jquery-1.4.4.min.js'));
+        $doc->add_ref_js(surl('/static/js/jquery-ui-1.8.6.custom.min.js'));
+		$doc->add_ref_js(surl('/static/fileupload/jquery.fileupload.js'));
+		$doc->add_ref_js(surl('/static/fileupload/jquery.fileupload-ui.js'));
+        $doc->add_ref_js(surl('/static/js/jquery-createEl.js'));
+        $doc->add_ref_js('http://maps.google.com/maps/api/js?sensor=false');
+        $doc->add_ref_js(surl('/static/js/collectopia/api.js'));
+		$doc->add_ref_js(surl('/static/js/collectopia/ui.js'));
+        $doc->add_ref_js(surl('/static/js/collectopia/map.js'));
+        $doc->add_ref_js(surl('/static/js/collectopia/panels.js'));
+        $doc->add_ref_js(surl('/static/js/collectopia/panel/addplace.js'));
+        $doc->add_ref_js(surl('/static/js/collectopia/panel/info.js'));
+        $doc->add_ref_js(surl('/static/js/collectopia/panel/help.js'));
         
         // Jquery cycle
-        $this->get_document()->add_ref_js(surl('/static/jcycle/jquery.cycle.all.min.js'));
+        $doc->add_ref_js(surl('/static/jcycle/jquery.cycle.all.min.js'));
         
         // Jquery Fancy
-        $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.easing-1.3.pack.js'));
-        $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.mousewheel-3.0.4.pack.js'));        
-        $this->get_document()->add_ref_js(surl('/static/fancybox/jquery.fancybox-1.3.4.pack.js'));
+        $doc->add_ref_js(surl('/static/fancybox/jquery.easing-1.3.pack.js'));
+        $doc->add_ref_js(surl('/static/fancybox/jquery.mousewheel-3.0.4.pack.js'));        
+        $doc->add_ref_js(surl('/static/fancybox/jquery.fancybox-1.3.4.pack.js'));
        
     	// Extra css
     	$style = '';

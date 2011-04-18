@@ -19,10 +19,10 @@ collectopia.InfoPanel = function(map, place) {
 	
 	// Capture events	
 	var highlight_marker = function(){
-		pthis.place.marker.setIcon(pthis.place.getFocusedMarkerImage().toGoogleMarkerImage());		
+		pthis.place._marker.setIcon(pthis.place.getFocusedMarkerImage().toGoogleMarkerImage());		
 	};	
 	var downlight_marker = function(){
-		pthis.place.marker.setIcon(pthis.place.getMarkerImage().toGoogleMarkerImage());
+		pthis.place._marker.setIcon(pthis.place.getMarkerImage().toGoogleMarkerImage());
 	};	
 	this.events.bind('closed',function(){
 		downlight_marker();
@@ -35,7 +35,7 @@ collectopia.InfoPanel = function(map, place) {
 	highlight_marker();
 	
 	// Move window where the marker is
-	marker_pos = this.place.marker.getPoint();
+	marker_pos = this.place._marker.getPoint();
 	this.moveNear(marker_pos.x - 10, marker_pos.y - 56, 140, 56);
 };
 collectopia.InfoPanel.prototype = jQuery.extend({}, collectopia.Panel.prototype);

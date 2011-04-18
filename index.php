@@ -72,13 +72,18 @@ Stupid::set_default_action(function() { throw new Exception404('Unknown resource
 try {
 	Stupid::chain_reaction();
 }catch (Exception404 $e) {
-	header('404 Not Found');
+	header('HTTP/1.1 404 Not Found');
 	echo '<h1>404 Not Found</h1>';
 	echo tag('p', $e->getMessage());
 	exit;
 }catch (Exception $e){
-	header('500 Internal Server Error');
+	header('HTTP/1.1 500 Internal Server Error');
 	echo '<h1>500 Internal Server Error</h1>';
+	echo tag('p', $e->getMessage());
+	ob_start();
+	var_dump(debug_backtrace());
+	$bt = ob_get_clean();
+	echo tag('pre', $bt);
 	exit;
 }
 

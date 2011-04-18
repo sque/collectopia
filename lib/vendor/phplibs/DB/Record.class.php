@@ -695,6 +695,7 @@ class DB_Record
 				return false;
 			
 			throw new RuntimeException("Unknown DB_Record relation type '{$rel['type']}'");
+			
 		}
 		
 		// Oops!

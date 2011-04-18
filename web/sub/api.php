@@ -75,7 +75,7 @@ function place_id_edit($pid){
 function place_id_rate($id) {
 	if (!$p = Place::open(array('id' => $id)))
 		throw new Exception404('Unknown place.');
-	$vote_rate = Net_HTTP_RequestParam::get('rate');
+	$vote_rate = Net_HTTP_RequestParam::get('rate', 'post');
 	
 	$new_rating = (($p->rate_current * $p->rate_total) + $vote_rate) / ($p->rate_total + 1);
 	$p->rate_current = $new_rating;

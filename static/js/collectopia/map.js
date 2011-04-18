@@ -46,6 +46,23 @@ collectopia.Map = function(dom, categories) {
 				});
 			},
 			category : 'map-control'
+		},
+		help : {
+			dom : null,
+			title : 'Help',
+			click : function() {
+				var btn = $(this);
+				if (btn.hasClass('enabled'))
+					return;
+				btn.addClass('enabled');
+				
+				var panel = new collectopia.HelpPanel();
+				panel.events.bind('closed', function() {
+					btn.stop(true, true).animate({left: -65}).removeClass('enabled');
+				}); 
+				return false;
+			},			
+			category : 'help'
 		}
 	};
 	
@@ -178,7 +195,7 @@ collectopia.Map.prototype.drawPlaces = function() {
 		if (collectopia.isDefined(place.marker))
 			continue;
 		
-		place.marker = new google.maps.Marker( {
+		place._marker = new google.maps.Marker( {
 			map : this.google.map,
 			position : new google.maps.LatLng(place.loc_lat, place.loc_lng),
 			title : place.name,
@@ -192,14 +209,14 @@ collectopia.Map.prototype.drawPlaces = function() {
 			place: place
 		});
 		var pthis = this;
-		google.maps.event.addListener(place.marker, 'click', function() {
-			if (this.place.infopanel == undefined) {
-				this.place.infopanel = new collectopia.InfoPanel(pthis, this.place);
-				this.place.infopanel.events.bind('closed', function(event){
-					delete this.place.infopanel;
+		google.maps.event.addListener(place._marker, 'click', function() {
+			if (!collectopia.isDefined(this.place._infopanel)) {
+				this.place._infopanel = new collectopia.InfoPanel(pthis, this.place);
+				this.place._infopanel.events.bind('closed', function(event){
+					delete this.place._infopanel;
 				});
 			}else
-				this.place.infopanel.bringToFront();
+				this.place._infopanel.bringToFront();
 		});
 	};
 };
