@@ -22,6 +22,9 @@
  * @property float rate_current
  * @property integer rate_total
  * @property DateTime created_at
+ * 
+ * 
+ * @property MarkersPack marker 
 
  * @method Place open() Find and open a record based on primary key.
  * @method Place create() Create a new record and return object.
@@ -57,6 +60,16 @@ class Place extends DB_Record
 	);
 	
 	/**
+	 * Submit a new rating
+	 */
+	public function submit_rate($rate) {
+		$new_rating = (($this->rate_current * $this->rate_total) + (int)$rate) / ($this->rate_total + 1);
+		$this->rate_current = (float)$new_rating;
+		$this->rate_total += (float)1;
+		$this->save();	
+	}
+	
+	/**
 	 * Get an array formated in the collectopia API format.
 	 * @return array Associative array with all place ready to be jsoned
 	 */
@@ -72,11 +85,14 @@ class Place extends DB_Record
 		$api_data = array_merge($this->toArray(),
 			array('categories' => array(), 'photos' => array())
 		);
+		// After update this fields transform to strings
+		$api_data['rate_total'] = (int) $api_data['rate_total'];
+		$api_data['rate_current'] = (float) $api_data['rate_current'];
 		
 		// Enrich with category info
 		foreach(PlacesCats::raw_query()
 			->select(array('cat_tag'))->where('place_id = ?')->execute($this->id) as $cat)
-			$api_data['categories'][] = $cat['cat_tag'];
+		$api_data['categories'][] = $cat['cat_tag'];
 
 		// Enrich with photo info
 		foreach(Photo::open_query()
@@ -213,11 +229,16 @@ Place::events()->connect('op.pre.create', function($e) {
 	$data['slug'] = Place::generate_slug($data['name']);
 });
 
-Place::events()->connect('on.pre.update', function(Event $e) {
+Place::events()->connect('op.pre.save', function(Event $e) {
 	$r = $e->arguments['record'];
+
+	// Update slug
 	if (isset($e->arguments['old_values']['name'])) {
-		$this->slug = Place::generate_slug($name);
+		$r->slug = Place::generate_slug($r->name);
 	}
+	
+	// TODO: Update index
+	
 });
 
 Place::events()->connect('op.post.create', function($e) {

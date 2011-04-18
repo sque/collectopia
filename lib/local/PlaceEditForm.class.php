@@ -169,9 +169,11 @@ class PlaceEditForm extends JsonForm
     		$this->place->$fdb = $values[$ffrm];
     	}
     	
-    	// Update categories
-    	
+    	// Update categories    	
     	$this->place->save();
+    	
+		// Regenerate markers for this place
+    	$this->place->generate_markers();
     	
     	// Return the place
     	return $this->place;

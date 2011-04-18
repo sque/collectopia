@@ -77,16 +77,14 @@ function place_id_rate($id) {
 		throw new Exception404('Unknown place.');
 	$vote_rate = Net_HTTP_RequestParam::get('rate', 'post');
 	
-	$new_rating = (($p->rate_current * $p->rate_total) + $vote_rate) / ($p->rate_total + 1);
-	$p->rate_current = $new_rating;
-	$p->rate_total += 1;
-	$p->save();
+	$p->submit_rate($vote_rate);	
 	
 	header('Content-type: application/json');
 	echo json_encode($p->to_api());
 }
 
 function place_all(){
+	ob_start("ob_gzhandler");
 	header('Content-type: application/json');
 	$places = Place::open_all();
 	$data = array();

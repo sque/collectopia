@@ -82,7 +82,8 @@ collectopia.Map = function(dom, categories) {
 		this.google.map = new google.maps.Map(
 			document.getElementById("map-canvas"), this.google.mapOptions);
 		google.maps.event.addListener(this.google.map, 'idle', function(bounds) {
-			//pthis.drawPlaces();
+			console.log('idle');
+			pthis.drawPlaces();
 		});
 		this.google.geocoder = new google.maps.Geocoder();
 	};
@@ -187,45 +188,18 @@ collectopia.Map = function(dom, categories) {
 
 
 collectopia.Map.prototype.drawPlaces = function() {
-	console.log('drawing places');
-	for(var i in this.places){
-		var place = this.places[i];
-		
-		// Skip the rendered ones.
-		if (collectopia.isDefined(place.marker))
-			continue;
-		
-		place._marker = new google.maps.Marker( {
-			map : this.google.map,
-			position : new google.maps.LatLng(place.loc_lat, place.loc_lng),
-			title : place.name,
-			icon : place.getMarkerImage().toGoogleMarkerImage(),
-			shadow : new google.maps.MarkerImage(
-				'static/images/marker_shadow.png',
-				null,
-				null,
-				new google.maps.Point(0, 28)
-			),
-			place: place
-		});
-		var pthis = this;
-		google.maps.event.addListener(place._marker, 'click', function() {
-			if (!collectopia.isDefined(this.place._infopanel)) {
-				this.place._infopanel = new collectopia.InfoPanel(pthis, this.place);
-				this.place._infopanel.events.bind('closed', function(event){
-					delete this.place._infopanel;
-				});
-			}else
-				this.place._infopanel.bringToFront();
-		});
+	console.log('drawing all places');
+	for(var i in this.places){		
+		this.places[i].showMarker(this);
 	};
 };
 collectopia.Map.prototype.showPlace = function(place_id) {
-	var place = this.places[place_id];
-	if ((place_id == undefined)
-		|| ((place = this.places[place_id]) == undefined))
+	
+	if ((!collectopia.isDefined(place_id))
+		|| (!collectopia.isDefined(this.places[place_id])))
 		return;
-	this.google.map.panTo(new google.maps.LatLng(place.loc_lat, place.loc_lng));
+	var place = this.places[place_id];
+	this.google.map.panTo(place.getGoogleLatLng());
 	this.google.map.setZoom(10);
 };
 
@@ -240,4 +214,70 @@ google.maps.Marker.prototype.getPoint = function(){
 	    scale = Math.pow(2, this.map.getZoom()),
 	    worldPoint = this.map.getProjection().fromLatLngToPoint(this.getPosition());
 	 return new google.maps.Point((worldPoint.x - bottomLeft.x)*scale,(worldPoint.y-topRight.y)*scale); 
+};
+
+/**
+ * Extend collectopia.api.Place to support map operations
+ */
+collectopia.api.Place.prototype.getGoogleLatLng = function() {
+	return new google.maps.LatLng(this.loc_lat, this.loc_lng);
+};
+
+/**
+ * Show places info panel
+ */
+collectopia.api.Place.prototype.showInfo = function(map) {
+	if (!collectopia.isDefined(this._infopanel)) {
+		this._infopanel = new collectopia.InfoPanel(map, this);
+		this._infopanel.events.bind('closed', function(event){
+			delete this.place._infopanel;
+		});
+	}else
+		this._infopanel.bringToFront();
+};
+
+/**
+ * Show the marker on map for this place
+ */
+collectopia.api.Place.prototype.showMarker = function(map, redraw) {
+	
+	if (Boolean(redraw) && collectopia.isDefined(this._marker)) {
+		// To redraw, erase everything and recall
+		this._marker.setMap(null);
+		delete this._marker;		
+		return this.showMarker(map);
+	}
+	
+	// Skip the rendered ones.
+	if (!collectopia.isDefined(this._marker)) {
+		this._marker = new google.maps.Marker( {
+			map : map.google.map,
+			position : this.getGoogleLatLng(),
+			title : this.name,
+			icon : this.getMarkerImage().toGoogleMarkerImage(),
+			shadow : new google.maps.MarkerImage(
+				'static/images/marker_shadow.png',
+				null,
+				null,
+				new google.maps.Point(0, 28)
+			),
+			place: this
+		});
+		
+		google.maps.event.addListener(this._marker, 'click', function() {
+			this.place.showInfo(map);			
+		});
+	} else if (!this._marker.getVisible()) {
+		
+		// Show marker if hidden
+		this._marker.setMap(map.google.map);
+	}
+};
+
+/**
+ * Hide the marker of a place from the map
+ */
+collectopia.api.Place.prototype.hideMarker = function() {
+	if (collectopia.isDefined(this._marker))
+		this._marker.setMap(null);
 };

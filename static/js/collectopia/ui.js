@@ -32,7 +32,9 @@ collectopia.ui.Component.prototype.getDom = function() {
  * Append/attach this component on an element
  * @param {jQuery} el Jquery enabled DOM Element that will be append to.
  */
-collectopia.ui.Component.prototype.attachTo = function(el) {	
+collectopia.ui.Component.prototype.attachTo = function(el) {
+	if (this.isAttached())
+		return;
 	el.append(this.getDom());
 	this.events.triggerHandler('attached');
 };
@@ -41,6 +43,8 @@ collectopia.ui.Component.prototype.attachTo = function(el) {
  * Detach this component from the ui.
  */
 collectopia.ui.Component.prototype.detach = function() {
+	if (!this.isAttached())
+		return;
 	this.getDom().detach();
 	this.events.triggerHandler('detached');
 };
@@ -642,7 +646,7 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 				rating.attr('class', 'rating selected current-' + Math.round(place.rate_current))
 				.find('li').removeClass('hover').unbind('mouseover').unbind('mouseout').unbind('click');
 				rating_span.find('.textual .total .number').text(place.rate_total);
-				rating_span.find('.textual .score').text(parseFloat(place.rate_current).toFixed(1));
+				rating_span.find('.textual .score').text(place.rate_current.toFixed(1));
 			});			
 		});
 	rating_span.createEl('span', { class : 'textual'})

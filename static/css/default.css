@@ -96,6 +96,7 @@ div#content {
 	border-color: #A5A5A5;
 }
 
+/** Panel **/
 .panel {
 	padding: 11px;
 	background-color: #EFEFEF;	
@@ -227,23 +228,22 @@ div#content {
 	resize: vertical;
 }
 
-
-
-/** CreatePanel **/
-.panel.place-new .loading {
+.loading {
 	min-height: 300px;
 	height: 100%;
 	line-height: 100%;	
 	background: white url('images/loading.gif') no-repeat center center;	
 }
 
-.panel.place-new .submitted h1{
+.panel .submitted h1{
 	margin: 150px auto 0px auto;
 	width: 200px;
 	padding-bottom: 230px;
 	text-align: center;
-	background: white url('images/checked_sent.png') no-repeat 65% center;
+	background: white url('images/check.png') no-repeat 65% center;
 }
+
+
 
 /** InfoPanel **/
 .panel.info {
