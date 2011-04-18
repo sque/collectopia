@@ -172,6 +172,44 @@ class PlaceEditForm extends JsonForm
     	// Update categories    	
     	$this->place->save();
     	
+    	// Add the categories
+    	$existing_cats = $this->place->categories->all();
+    	$existing_cats = array_map(function($c){ return $c->tag; } , $existing_cats);
+    	$setup_cats = explode(',', $values['categories']);
+    	foreach($setup_cats as $cat) {
+    		if (in_array($cat, $existing_cats))
+    			continue;
+    		PlacesCats::create(array('cat_tag' => $cat, 'place_id' => $this->place->id));
+    	}
+    	foreach(array_diff($existing_cats, $setup_cats) as $cat) {
+    		$this->place->categories->remove(Category::open($cat));
+    	}
+    	
+    	// Attach all temporary photos on this place.
+    	$existing_photos = $this->place->photos->all();
+    	$existing_photos = array_map(function($p) { return $p->id; }, $existing_photos);
+    	$requested_photos = explode(',', $values['photos']);
+    	foreach($requested_photos as $photo) {
+    		if ($photo == '')
+    			continue;
+    		if (substr($photo, 0, 2) == 's:')
+    			$photo = substr($photo, 2);
+    		if ($p = Photo::open_temporary($photo))
+    			$p->attach_at_place($this->place);
+    	}
+		foreach(array_diff($existing_photos, $requested_photos) as $pid) {
+			if (!($p = Photo::open($pid)))
+				continue;
+			if ($p->place_id != $this->place->id)
+				continue;
+			$p->place_id = null;
+			$p->secret = null;
+			$p->save();
+    	}
+    	
+    	// Remove the removed ones.
+    	
+    		
 		// Regenerate markers for this place
     	$this->place->generate_markers();
     	

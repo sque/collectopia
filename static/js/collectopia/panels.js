@@ -425,3 +425,10 @@ collectopia.Panel.prototype.enable = function(html) {
 	this.enabled = true;
 	this.events.triggerHandler('enabled', { panel : this});
 };
+
+/**
+ * Set the title of the panel
+ */
+collectopia.Panel.prototype.setTitle = function(title) {
+	this.dom.find('> div > .title').text(title);	
+};

@@ -71,5 +71,3 @@ class DB_Record_RelationshipMany
 	    return NULL;
     }
 }
-
-?>

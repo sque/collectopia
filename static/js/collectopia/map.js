@@ -267,11 +267,44 @@ collectopia.api.Place.prototype.showMarker = function(map, redraw) {
 		google.maps.event.addListener(this._marker, 'click', function() {
 			this.place.showInfo(map);			
 		});
-	} else if (!this._marker.getVisible()) {
+	} else if (!this._marker.getMap()) {
 		
 		// Show marker if hidden
 		this._marker.setMap(map.google.map);
 	}
+};
+
+/**
+ * Switch to focused marker for this place
+ */
+collectopia.api.Place.prototype.useFocusedMarker = function() {
+	if (!collectopia.isDefined(this._marker))
+		return;
+	
+	this._marker.setIcon(this.getFocusedMarkerImage().toGoogleMarkerImage());
+	this._marker.setShadow(new google.maps.MarkerImage(
+			'static/images/marker_focus_shadow.png',
+			null,
+			null,
+			new google.maps.Point(0, 56)
+		));
+};
+
+
+/**
+ * Switch to normal marker for this place
+ */
+collectopia.api.Place.prototype.useNormalMarker = function() {
+	if (!collectopia.isDefined(this._marker))
+		return;
+	
+	this._marker.setIcon(this.getFocusedMarkerImage().toGoogleMarkerImage());
+	this._marker.setShadow(new google.maps.MarkerImage(
+			'static/images/marker_shadow.png',
+			null,
+			null,
+			new google.maps.Point(0, 28)
+		));
 };
 
 /**

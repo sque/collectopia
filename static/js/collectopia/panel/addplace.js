@@ -37,13 +37,13 @@ collectopia.AddPlacePanel = function(map, geocoder) {
 		map.drawPlaces();
 		
 		// Fade out
-		pthis.editor.marker.setMap(null);
+		pthis.editor.hideEditMarker(null);
 		pthis.dom.delay(1500).fadeOut('slow', function(){	pthis.close(); });
 	});
 	this.editor.attachTo(pthis.dom_body);
 	
 	this.events.bind('onclose', function(){
-		pthis.editor.marker.setMap(null);
+		pthis.editor.detach();
 	});	
 	
 	

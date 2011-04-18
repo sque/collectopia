@@ -97,5 +97,3 @@ class DB_Record_RelationshipBridge
 		return $this->query;
 	}
 }
-
-?>

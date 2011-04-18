@@ -195,6 +195,7 @@ collectopia.ui.Form.prototype.submit = function(){
 
 /**
  * A complete place editor UI.
+ * @note For the editor marker to work, you must properly attach and detach editor.
  * @param place The place we are editing. (Give null for new one)
  * Events exposed by this component
  *  - success When the place editor finished successfully.
@@ -212,7 +213,7 @@ collectopia.ui.PlaceEditor = function(place, map, geocoder) {
 	
 	// On detached remove google marker
 	this.events.bind('detached', function(event) {
-		event.target.marker.setMap(null);
+		event.target.hideEditMarker(null);
 	});
 };
 
@@ -342,7 +343,7 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 	            a.find('img').attr('src', photo.getThumbUrl());
 	            a.find('button').data('photo', photo).click(function(event){
 	            	a.hide('fast', function(){ a.remove(); }); 
-	            	ped.form.detachPhoto(photo.secret);
+	            	ped.form.detachPhoto('s:' + photo.secret);
 	            	photo.reqDelete();		            	
 	            });
 	            return a;
@@ -357,12 +358,12 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 	        }
 	    }); // fileUploadUi
 		
-		// On attached add google marker
+		// On attached add edit marker
 		ped.events.bind('attached', function(event, args){
-			event.target.showMarker();
+			event.target.showEditMarker();
 		});
 		if (ped.isAttached())
-			ped.showMarker();
+			ped.showEditMarker();
 		
 		ped.events.triggerHandler('ajax.end');
 	}); // reqXXXFrom
@@ -373,18 +374,18 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 /**
  * Show the google marker on the map for this editor
  */
-collectopia.ui.PlaceEditor.prototype.showMarker = function() {
-	if (collectopia.isDefined(this.marker)) {
+collectopia.ui.PlaceEditor.prototype.showEditMarker = function() {
+	if (collectopia.isDefined(this.edit_marker)) {
 		// In case that was just hidden
-		this.marker.setMap(this.map);
+		this.edit_marker.setMap(this.map);
 		return;
 	}
 	
-	this.marker = this.getGoogleMarker();
+	this.edit_marker = this.getGoogleMarker();
 	/* Listen on marker "position_changed" and update location on creation form */
 	var ped = this;
-	google.maps.event.addListener(this.marker, 'dragend', marker_moved_action = function() {
-		ped.geocoder.geocode({'latLng': ped.marker.getPosition(), 'language' : 'en'}, function(results, status) {
+	google.maps.event.addListener(this.edit_marker, 'dragend', marker_moved_action = function() {
+		ped.geocoder.geocode({'latLng': ped.edit_marker.getPosition(), 'language' : 'en'}, function(results, status) {
 			if (status == google.maps.GeocoderStatus.OK) {
 				ped.form.setLocation(results[0].geometry.location);
 				ped.form.setGeocode(results[0]);
@@ -403,9 +404,11 @@ collectopia.ui.PlaceEditor.prototype.showMarker = function() {
 /**
  * Hide the google marker of this editor from the map.
  */
-collectopia.ui.PlaceEditor.prototype.hideMarker = function() {
-	if (collectopia.isDefined(this.marker))
-		this.marker.setMap(null);
+collectopia.ui.PlaceEditor.prototype.hideEditMarker = function() {
+	if (collectopia.isDefined(this.edit_marker)) {
+		this.edit_marker.setMap(null);
+		delete this.edit_marker;
+	}
 };
 
 /**
@@ -499,11 +502,12 @@ collectopia.ui.PlaceEditor.Form.prototype.attachPhoto = function(photo){
  * Detach a photo from the form
  * @param id The distinguish id of this photo in the form.
  */
-collectopia.ui.PlaceEditor.Form.prototype.detachPhoto = function(id){
+collectopia.ui.PlaceEditor.Form.prototype.detachPhoto = function(id){	
 	var photos = this.getAttachedPhotos();
-	var idx = photos.indexOf(id);
+	var idx = photos.indexOf(String(id));
 	if (idx >= 0)
 		photos.splice(idx, 1);
+
 	this.setField('photos', photos.join(','));
 };
 

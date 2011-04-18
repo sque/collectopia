@@ -77,7 +77,7 @@ CREATE TABLE `actions_log` (
 
 CREATE TABLE `photos` (
 	`id` integer auto_increment,
-	`secret` char(32) NOT NULL,
+	`secret` char(32),
 	`place_id` integer,
 	`name` varchar(255) NOT NULL,
 	`width` integer NOT NULL,
