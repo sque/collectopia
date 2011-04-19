@@ -78,3 +78,7 @@ EOF
 system("find . -type d | xargs chmod 0755");	// All files are accessible
 system("mkdir -p private/tmp private/search data/markers data/photos");
 system('chmod 0777 private/tmp private/search data/markers data/photos config.inc.php');
+
+
+// Delete utils
+system("rm -rf utils");
