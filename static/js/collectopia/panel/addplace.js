@@ -8,10 +8,10 @@ collectopia.AddPlacePanel = function(map, geocoder) {
 	var pthis = this,
 		marker_moved_action;
 	collectopia.Panel.call(this, 'place-new', 'Add Place', 
-		[{'title': 'send', 'callback': function(){				
-				pthis.editor.form.submit();
+		{'send': { title : 'Send', callback: function(){ pthis.editor.form.submit();}
 			}
-		}]);
+		}
+		);
 	
 	// Save data
 	this.map = map;

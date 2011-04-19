@@ -635,8 +635,8 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 	var cats_ul = dom.createEl('ul', { class: 'categories'});
 	for(var i in place.categories) {
 		var cat = place.categories[i];
-		cats_ul.createEl('li').createEl('img', 
-			{ src : 'static/images/cat_' + cat + '_24.png',
+		cats_ul.createEl('li').createEl('div', 
+			{ class : 'sprite cat medium ' + cat,
 				title : map.categories[cat].title }
 		);
 	}

@@ -383,7 +383,7 @@ collectopia.Map.ButtonWidget.prototype.constructor = collectopia.Map.ButtonWidge
  * Animate to switching on this button 
  */
 collectopia.Map.ButtonWidget.prototype.animateSwitchOn = function(callback) {
-	this.getDom().stop(true, true).animate(this.ltr?{left: -55}:{right: -55}, callback);	
+	this.getDom().stop(true, true).animate(this.ltr?{left: -34}:{right: -34}, callback);	
 	return this;
 };
 
@@ -391,7 +391,7 @@ collectopia.Map.ButtonWidget.prototype.animateSwitchOn = function(callback) {
  * Animate to switch off this button 
  */
 collectopia.Map.ButtonWidget.prototype.animateSwitchOff = function(callback) {
-	this.getDom().stop(true, true).animate(this.ltr?{left: -75}:{right: -75}, callback);	
+	this.getDom().stop(true, true).animate(this.ltr?{left: -54}:{right: -54}, callback);	
 	return this;
 };
 

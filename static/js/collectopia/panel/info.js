@@ -107,7 +107,7 @@ collectopia.InfoPanel.prototype.switchToView = function() {
 	
 	this.viewer.attachTo(this.dom_body);
 	
-	this.addAction('report', 'Report', function(){ console.log('Report fake'); });
+	//this.addAction('report', 'Report', function(){ console.log('Report fake'); });
 	this.addAction('edit', 'Edit', function(){ this.switchToEdit(); });
 };
 

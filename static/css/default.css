@@ -56,8 +56,8 @@ div#content {
 }
 
 .widget.button{
-	background: #a1a1a1 url('images/btn_create.png') no-repeat 72px center;
-	padding: 9px 30px 9px 9px;
+	background: #a1a1a1;
+	padding: 9px 9px 9px 9px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
@@ -72,34 +72,46 @@ div#content {
 	width: 65px;
 	height: 24px;
 	position: relative;
-	left: -75px;
+	left: -54px;
 }
 
 .button.enabled {
-	left: -55px;
+	left: -34px;
 }
 
 .widget-area.right .widget.button{
 	background-position: 9px center;
-	right: -75px;
+	right: -54px;
 	left: auto;
 }
 
 .widget-area.right .widget.button.enabled{
-	right: -55px;	
+	right: -34px;	
 }
 
 
-.button.create {	background-image: url('images/button_create.png');	}
+/** Button sprites **/
+.button.create span, .button.help span, .button.expose span, .button.random span {
+	width: 24px; height: 24px; display: block;
+	background: transparent url('images/buttons.png') no-repeat 0px 0px;
+}
+.button.create span { background-position: 0px -0px;}
+.button.expose {	text-align: right; }
+.button.expose span { background-position: 0px -26px; margin-left: auto; margin-right: 0px;  }
+.button.help span { background-position: 0px -52px; }
+.button.random span { background-position: 0px -78px; }
+
+/*.button.create {	background-image: url('images/button_create.png');	}
 .button.help {	background-image: url('images/button_help.png');	}
 .button.expose {	background-image: url('images/button_expose.png');	}
-.button.random {	background-image: url('images/button_random.png');	}
+.button.random {	background-image: url('images/button_random.png');	}*/
 
 /** categories sprites **/
 
 .sprite { display: block; }
 .sprite.cat {	background: transparent url('images/categories.png') no-repeat 0px 0px;}
 .sprite.cat.small {	width: 20px; height: 20px;}
+.sprite.cat.medium {	width: 24px; height: 24px; }
 
 .sprite.cat.small.house {	background-position: 0px 0px;	}
 .sprite.cat.small.fun {	background-position: 0px -22px;	}
@@ -107,6 +119,13 @@ div#content {
 .sprite.cat.small.learning {	background-position: 0px -66px;	}
 .sprite.cat.small.freestuff {	background-position: 0px -88px;	}
 .sprite.cat.small.talk {	background-position: 0px -110px;	}
+
+.sprite.cat.medium.house {	background-position: 0px -132px;	}
+.sprite.cat.medium.fun {	background-position: 0px -158px;	}
+.sprite.cat.medium.food {	background-position: 0px -184px;	}
+.sprite.cat.medium.learning {	background-position: 0px -210px;	}
+.sprite.cat.medium.freestuff {	background-position: 0px -236px;	}
+.sprite.cat.medium.talk {	background-position: 0px -262px;	}
 
 /** Categories filter **/
 .widget.filter .categories {
@@ -294,10 +313,26 @@ div#content {
 
 
 /** InfoPanel **/
-.panel.info {
-
+.panel.info ul.actions li.edit a{
+	background: white url('images/buttons.png') no-repeat 5px -180px;
+	padding-left: 24px;	
 }
-	
+
+.panel ul.actions li.save a{
+	background: white url('images/buttons.png') no-repeat 5px -150px;
+	padding-left: 24px;
+}
+
+.panel ul.actions li.cancel a{
+	background: white url('images/buttons.png') no-repeat 5px -210px;
+	padding-left: 24px;	
+}
+
+/** New place **/
+.panel.place-new ul.actions li.send a{
+	background: white url('images/buttons.png') no-repeat 5px -150px;
+	padding-left: 24px;
+}
 
 /** rating **/
 .rating .textual {

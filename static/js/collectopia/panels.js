@@ -289,9 +289,8 @@ collectopia.Panel = function(type, title, actions, parent) {
 	// Add actions
 	this.actions = {};
 	if (collectopia.isDefined(actions)) {
-		$.each(actions, function(name){
-			pthis.addAction(name, this.title, this.callback);
-		});
+		for(var i in actions)
+			pthis.addAction(i, actions[i].title, actions[i].callback);		
 	}
 	
 	// Input functionality to panel
@@ -321,8 +320,8 @@ collectopia.Panel = function(type, title, actions, parent) {
  */
 collectopia.Panel.prototype.addAction = function(name, title, callback) {
 	var ul = this.dom.find('ul.actions'), pthis = this;
-	var title_el = collectopia.isString(title)?$('<a href="#"/>').text(title):title;
-	ul.append($('<li/>').attr('name', name).append(title_el.click(function(event){
+	var title_el = collectopia.isString(title)?$('<a href="#"/>').html(title):title;
+	ul.append($('<li/>').attr('name', name).addClass(name).append(title_el.click(function(event){
 		callback.call(pthis, event);
 	})));
 };

@@ -56,7 +56,6 @@ Stupid::set_default_action(function() { throw new Exception404('Unknown action.'
 Stupid::chain_reaction();
 
 function place_new(){
-	sleep(1.5);
 	Layout::open('default')->deactivate();	
 	$pef = new PlaceEditForm();
 	$pef->json_render();
@@ -66,7 +65,6 @@ function place_id_edit($pid){
 	if (!($p = Place::open($pid)))
 		throw new Exception404("Unknown place.");
 		
-	sleep(1.5);
 	Layout::open('default')->deactivate();
 	$pef = new PlaceEditForm($p);
 	$pef->json_render();
