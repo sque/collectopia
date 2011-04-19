@@ -12,11 +12,6 @@ class SearchIndex
 		$this->engine = $engine;
 	}
 	
-	public function addCity($city)
-	{
-		
-	}
-	
 	//! Add a new place in index
 	public function addPlace(Place $place)
 	{

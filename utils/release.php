@@ -60,6 +60,7 @@ file_put_contents('lib/local/Layout/css.php', "<?php return array('/{$collectopi
 // create default config file
 file_put_contents('config.inc.php',
 <<<EOF
+<?php
 Registry::set('site.deploy_checks', '');
 Registry::set('search.index-directory', __DIR__ . '/private/search');
 Registry::set('photos.tmp-directory', __DIR__ . '/private/tmp');
@@ -74,5 +75,6 @@ EOF
 
 
 // Setup permissions
+system("find . -type d | xargs chmod 0755");	// All files are accessible
 system("mkdir -p private/tmp private/search data/markers data/photos");
 system('chmod 0777 private/tmp private/search data/markers data/photos config.inc.php');
