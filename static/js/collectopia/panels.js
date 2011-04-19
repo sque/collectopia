@@ -415,7 +415,7 @@ collectopia.Panel.prototype.disable = function(html) {
 	if (!this.enabled)
 		return;
 	this.dom.addClass('disabled');
-	this.dom_body.createEl('div', { class : 'disable_frame'}).html(html);	
+	this.dom_body.createEl('div', { 'class' : 'disable_frame'}).html(html);	
 	this.enabled = false;
 	this.events.triggerHandler('disabled', { panel : this});
 };

@@ -40,34 +40,16 @@ class Layout_Default extends Layout
         	array('name' => 'keywords'));    
         
         
-        $doc->add_favicon(surl('/static/images/favicon_32.png'));        
-        $doc->add_ref_css(surl('/static/css/default.css'));
-        $doc->add_ref_css(surl('/static/css/ui-lightness/jquery-ui.css'));
-        $doc->add_ref_css(surl('/static/fileupload/jquery.fileupload-ui.css'));
-        $doc->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
+        $doc->add_favicon(surl('/static/images/favicon_32.png'));   
         
+        foreach(include(__DIR__ . '/css.php') as $css)
+        	$doc->add_ref_css(surl($css));
         
-        $doc->add_ref_js(surl('/static/js/jquery-1.4.4.min.js'));
-        $doc->add_ref_js(surl('/static/js/jquery-ui-1.8.6.custom.min.js'));
-		$doc->add_ref_js(surl('/static/fileupload/jquery.fileupload.js'));
-		$doc->add_ref_js(surl('/static/fileupload/jquery.fileupload-ui.js'));
-        $doc->add_ref_js(surl('/static/js/jquery-createEl.js'));
         $doc->add_ref_js('http://maps.google.com/maps/api/js?sensor=false');
-        $doc->add_ref_js(surl('/static/js/collectopia/api.js'));
-		$doc->add_ref_js(surl('/static/js/collectopia/ui.js'));
-        $doc->add_ref_js(surl('/static/js/collectopia/map.js'));
-        $doc->add_ref_js(surl('/static/js/collectopia/panels.js'));
-        $doc->add_ref_js(surl('/static/js/collectopia/panel/addplace.js'));
-        $doc->add_ref_js(surl('/static/js/collectopia/panel/info.js'));
-        $doc->add_ref_js(surl('/static/js/collectopia/panel/help.js'));
-        
-        // Jquery cycle
-        $doc->add_ref_js(surl('/static/jcycle/jquery.cycle.all.min.js'));
-        
-        // Jquery Fancy
-        $doc->add_ref_js(surl('/static/fancybox/jquery.easing-1.3.pack.js'));
-        $doc->add_ref_js(surl('/static/fancybox/jquery.mousewheel-3.0.4.pack.js'));        
-        $doc->add_ref_js(surl('/static/fancybox/jquery.fancybox-1.3.4.pack.js'));
+
+        // Import javascripts
+        foreach(include(__DIR__ . '/js.php') as $js)
+        	$doc->add_ref_js(surl($js));
        
     	// Extra css
     	$style = '';

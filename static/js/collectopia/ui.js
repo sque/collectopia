@@ -258,7 +258,7 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 		/* Show all categories */
 		for(var i in map.categories){
 			var cat = map.categories[i];
-			var li = ul_cats.createEl('li', { class : cat['tag'], tag : cat['tag']}).text(cat['title'])
+			var li = ul_cats.createEl('li', { 'class' : cat.tag, tag : cat.tag}).text(cat.title)
 				.prepend($('<span class="checkbox"/>'))
 				.click(function(event){
 					var li = $(this);
@@ -617,8 +617,8 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 	var dom = $('<div class="component place-viewer"/>');
 	
 	// Show general information
-	dom.createEl('h3', { class : 'name' }).text(place.name);
-	var info_ul = dom.createEl('ul', {class: 'info'});	
+	dom.createEl('h3', { 'class' : 'name' }).text(place.name);
+	var info_ul = dom.createEl('ul', { 'class' : 'info'});	
 	var show_place_info_field = function(field, title){
 		if (place[field])
 			info_ul.createEl('li')
@@ -632,20 +632,20 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 	show_place_info_field('web', 'www');
 	
 	// Show categories
-	var cats_ul = dom.createEl('ul', { class: 'categories'});
+	var cats_ul = dom.createEl('ul', { 'class' : 'categories'});
 	for(var i in place.categories) {
 		var cat = place.categories[i];
 		cats_ul.createEl('li').createEl('div', 
-			{ class : 'sprite cat medium ' + cat,
+			{ 'class' : 'sprite cat medium ' + cat,
 				title : map.categories[cat].title }
 		);
 	}
 	
 	// Show ratings
-	var rating_span = dom.createEl('div', { class : 'rating'});
-	var rating = rating_span.createEl('ul', { class : 'rating current-' + Math.round(place.rate_current)});
+	var rating_span = dom.createEl('div', { 'class' : 'rating'});
+	var rating = rating_span.createEl('ul', { 'class' : 'rating current-' + Math.round(place.rate_current)});
 	for(var i = 0; i< 5; i++)
-		rating.createEl('li', { class: 'rate-' + (i+1), rate: (i+1)}).text(' ');
+		rating.createEl('li', { 'class': 'rate-' + (i+1), rate: (i+1)}).text(' ');
 	rating.find('li').hover(
 		function(event){
 			$(this).addClass('hover').prevAll().addClass('hover');
@@ -660,24 +660,24 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 				rating_span.find('.textual .score').text(place.rate_current.toFixed(1));
 			});			
 		});
-	rating_span.createEl('span', { class : 'textual'})
-		.createEl('span', {class : 'score'}).text(place.rate_current.toFixed(1)).parent()
-		.createEl('span', {class : 'total'})
+	rating_span.createEl('span', { 'class' : 'textual'})
+		.createEl('span', {'class' : 'score'}).text(place.rate_current.toFixed(1)).parent()
+		.createEl('span', {'class' : 'total'})
 			.append('(')
 			.append($('<span class="number"/>').text(place.rate_total))
 			.append(' votes)');
 	
 	// Show pictures
 	dom.createEl('hr');
-	var media_div = dom.createEl('div', { class : 'media'});
+	var media_div = dom.createEl('div', { 'class' : 'media'});
 	var video_present = Boolean(place.video != '');
 	var photos_present = Boolean(place.photos.length);
 	var media_present = video_present || photos_present;
 	
 	// Photos
 	if (photos_present) {
-		var cont = media_div.createEl('div', { class : 'photos'});
-		var gal = cont.createEl('div', {class : 'gallery'});
+		var cont = media_div.createEl('div', { 'class' : 'photos'});
+		var gal = cont.createEl('div', { 'class' : 'gallery'});
 		for(var i in place.photos)
 			gal.createEl('a', { rel : 'photos_place_' + this.place.id, 'href' : place.photos[i].getUrl(), target: '_blank'})
 				.createEl('img', { src : place.photos[i].getThumbUrl()});
@@ -713,7 +713,7 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 			gal.cycle('destroy');			    
 		});
 	} else if (media_present) {
-		media_div.createEl('div', { class : 'photos empty' })
+		media_div.createEl('div', { 'class' : 'photos empty' })
 			.createEl('img', { src : 'static/css/images/no_photos.png'});
 	}
 	
@@ -727,10 +727,10 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 		}
 		
 		// Create elements
-		var v = media_div.createEl('div', { class : 'video ' + video[0] })
+		var v = media_div.createEl('div', { 'class' : 'video ' + video[0] })
 			.createEl('a', { href : swf_url });		
 		v.createEl('img', { src : img_url });
-		v.createEl('div', { class: 'watermark'});
+		v.createEl('div', { 'class': 'watermark'});
 		
 		media_div.find(".video a").fancybox({
 	        'titleShow'     : false,
@@ -746,14 +746,14 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 			}
 		});
 	} else if (media_present){
-		media_div.createEl('div', { class : 'video empty' })
+		media_div.createEl('div', { 'class' : 'video empty' })
 			.createEl('img', { src : 'static/css/images/no_video.png'});
 	}
-	media_div.createEl('div', { class: 'spacer', style : 'clear: both;' });
+	media_div.createEl('div', { 'class' : 'spacer', style : 'clear: both;' });
 
 	// Description
-	dom.createEl('div', { class : 'description'})
+	dom.createEl('div', { 'class' : 'description'})
 		.text(place.description);
-	dom.createEl('div', { class: 'spacer', style : 'clear: both;' });
+	dom.createEl('div', { 'class' : 'spacer', style : 'clear: both;' });
 	return dom;
 };
