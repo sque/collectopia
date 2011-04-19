@@ -184,7 +184,14 @@ collectopia.PanelSystem.prototype.switchExposeOn = function() {
 		this.getFocused().events.triggerHandler('blur', this.getFocused());
 	
 	// Expose related change event
-	this.events.triggerHandler('expose-changed', { enabled : true });
+	this.events.triggerHandler('expose-changed', true);
+};
+
+/**
+ * Check if expose mode is one
+ */
+collectopia.PanelSystem.prototype.isExposeOn = function() {
+	return this.expose_mode.enabled;
 };
 
 /**
@@ -217,7 +224,7 @@ collectopia.PanelSystem.prototype.switchExposeOff = function() {
 		this.getFocused().events.triggerHandler('focus', this.getFocused());
 
 	// Expose related change event
-	this.events.triggerHandler('expose-changed', { enabled : false });
+	this.events.triggerHandler('expose-changed', false);
 };
 
 /**

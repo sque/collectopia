@@ -23,6 +23,3 @@
 // Use default layout to render this page
 Layout::open('default')->activate();
 
-etag('div',
-	tag('input name="search"')
-)->add_class('widget search');

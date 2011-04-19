@@ -65,9 +65,9 @@ collectopia.InfoPanel.prototype.buildEditor = function() {
 		pthis.editor.hideEditMarker();
 		pthis.dom.delay(1500).queue(function(){
 			$(this).dequeue();
+			pthis.dom_body.html('');
 			pthis.dom_body.css({width : '', height : ''});
 			pthis.dom.css({width : '', height : ''});
-			pthis.dom_body.html('');
 			pthis.editor.detach();
 			delete pthis.editor;	// HACK to workaround buggy second usage of place editor
 			delete pthis.viewer;	// Erase viewer to force rebuilding with new data.
@@ -95,8 +95,12 @@ collectopia.InfoPanel.prototype.buildEditor = function() {
 collectopia.InfoPanel.prototype.switchToView = function() {
 	this.clearActions();	
 	
-	if (collectopia.isDefined(this.editor))
+	if (collectopia.isDefined(this.editor)) {
+		if (this.editor.isUploadsTableVisible()) {
+			this.dom.css({width : '', height : ''});
+		}
 		this.editor.detach();
+	}
 	
 	if (!collectopia.isDefined(this.viewer))
 		this.viewer = new collectopia.ui.PlaceViewer(this.place);
@@ -115,6 +119,8 @@ collectopia.InfoPanel.prototype.switchToEdit = function() {
 	
 	if (!collectopia.isDefined(this.editor))
 		this.buildEditor();
+	else if (this.editor.isUploadsTableVisible())
+		this.dom.animate({ width : 542 });
 	
 	this.viewer.detach();
 	this.editor.attachTo(this.dom_body);

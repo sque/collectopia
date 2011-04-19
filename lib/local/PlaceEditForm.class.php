@@ -51,7 +51,7 @@ class PlaceEditForm extends JsonForm
 			'email' => array('display' => 'E-mail'),
         	'web' => array('display' => 'Website'),
         	'tel' => array('display' => 'Phone'),
-        	'video' => array('display' => 'Video URL (YouTube/Vimeo)',
+        	'video' => array('display' => 'Video URL (YouTube)',
         		/*'hint' => 'Give a vimeo or youtube url with the video you want.'*/),
 			'description' => array('display' => 'Description', 'type' => 'textarea',
         		'regcheck' => '/^.{10,}/', 'onerror' => 'Give a description of the place.'),

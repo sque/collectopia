@@ -372,6 +372,13 @@ collectopia.ui.PlaceEditor.prototype.buildDom = function() {
 };
 
 /**
+ * Check if uploads bar is visible
+ */
+collectopia.ui.PlaceEditor.prototype.isUploadsTableVisible = function() {
+	return this.getDom().hasClass('show-uploads');
+};
+
+/**
  * Show the google marker on the map for this editor
  */
 collectopia.ui.PlaceEditor.prototype.showEditMarker = function() {
@@ -707,7 +714,7 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 		});
 	} else if (media_present) {
 		media_div.createEl('div', { class : 'photos empty' })
-			.createEl('img', { src : 'static/css/images/no_photos.jpg'});
+			.createEl('img', { src : 'static/css/images/no_photos.png'});
 	}
 	
 	// Video
@@ -740,7 +747,7 @@ collectopia.ui.PlaceViewer.prototype.buildDom = function(){
 		});
 	} else if (media_present){
 		media_div.createEl('div', { class : 'video empty' })
-			.createEl('img', { src : 'static/css/images/no_video.jpg'});
+			.createEl('img', { src : 'static/css/images/no_video.png'});
 	}
 	media_div.createEl('div', { class: 'spacer', style : 'clear: both;' });
 

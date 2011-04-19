@@ -22,9 +22,7 @@
   	</li>
 	<li><a href="#thebuttons">The buttons</a>
 		<ul>
-			<li><a href="#printlist">&quot;Print list&quot;  button</a></li>
-		  	<li><a href="#craete">&quot;create&quot;  button</a></li>
-		  	<li><a href="#latest">&quot;latest&quot;  button</a></li>
+			<li><a href="#craete">&quot;create&quot;  button</a></li>
 		  	<li><a href="#random">&quot;take me  somewhere&quot; button</a></li>
 		  	<li><a href="#mapview">map view&quot; button </a></li>
   		</ul>
@@ -33,10 +31,9 @@
   	<li><a href="#thepanels">The panels</a>
   		<ul>
 			<li><a href="#create">&quot;create&quot; panel</a></li>
-		    <li><a href="#discussion">&quot;discussion&quot; panel</a></li>
 		    <li><a href="#edit">&quot;edit&quot; panel</a></li>
 		  	<li><a href="#info">&quot;info&quot;panel</a></li>
-		  	<li><a href="#printlistpanel">&quot;print&quot; panel</a></li>
+		  	
   		</ul>
   	</li>
   </ul>
@@ -48,16 +45,14 @@
 		or  write a text on collectopia.</p>	
   
   <ul>	
-  <li>Provide the most comprehensive and accurate information available. </li>
-  <li>Keep topical,  relevant and visionary.</li> 
-  <li>We encourage debating and discussion, however we will not tolerate rudeness, insulting posts, 
+  <li>try to rovide the most comprehensive and accurate information available. </li>
+  <li>try to keep topical,  relevant and visionary.</li> 
+  <li>no insulting posts, 
 	personal attacks or purposeless inflammatory posts.</li> 
   <li>Please refrain from posting meaningless things, one word (or short) non-sense posts, or the such. </li> 
-  <li>Discussion of  illegal activities is not permitted.</li> 
   <li>We reserve the  right to remove offensive posts without 
 	notice (You can always use  the contact mail address, if you need to notify the collectopia team  about a post).</li> 
-  <li>posting; i.e., posts deliberately designed to  disrupt the newswire and its basic ability to function.</li> 
-  <li>No Posts that are obviously incorrect or misleading. This includes  attempts to 
+    <li>No Posts that are obviously incorrect or misleading. This includes  attempts to 
    	spread misinformation or to impersonate another  individual.</li>
   <li>No Posts that contain generalized and negative assertions about any  race, 
    	nation, creed, class, ethnic group, sexual orientation, etc.</li> 
@@ -93,18 +88,11 @@
   <h3 id="thebuttons"> The buttons:</h3>
  
   
-  		<h4 id="printlist"> print list:</h4>
-  		<img src="pictures/navi_button_printlist.png" width="24" height="24" alt="printlist" />
-  		<p>The Print  list button opens the print list panel, see panels --> print list panel</p>
   
   		<h4 id="craete">add place  button:</h4>
   		<img src="pictures/navi_button_create.png" width="24" height="24" alt="add place" />
    		<p>Opens the  create panel. See create panel.</p>
-
-  		<h4 id="latest"> latest button </h4>
-	  	<img src="pictures/navi_button_latest.png" width="25" height="24" alt="latest" />
-  		<p>The latest button shows you the latest entries, and gives you the possibility to access these over clicking on each.</p>
-  
+  		
   		<h4 id="random"> take me somewhere button</h4>
   		<img src="pictures/navi_button_random.png" width="24" height="24" alt="random" />
   		<p>Gives you the  possibility to randomly zoom to a place.</p>
@@ -115,7 +103,7 @@
 
 
 
-  <h3 id="thepanels">The Panels:</h4>
+  <h3 id="thepanels">The Panels:</h3>
   <p>You can close any panel  with the ESC button on your keyboard.</p>
   <p>If you press the space  key on your keyboard you will enable the mapview</p>
   
@@ -153,7 +141,6 @@
   
   <p>The buttons at  the downside of the edit panel:</p>
   <ul>	
-	  	<li>The add to  print list button() allows you to ad the specific place to the  printlist.</li>
 	  	<li>The report button gives you the possibility to report the place to the  collectopia team.</li>
 	  
   </ul>
@@ -165,20 +152,13 @@
      	This should help  you to compare certain places and put the info panels next to each  other.</p>
      	<p>The buttons at  the downside of the edit panel:</p>
    <ul>
-	  <li>The add to  print list button() allows you to ad the specific place to the  printlist.</li>
+	  
 	  <li>The report button gives you the possibility to report the place to the  collectopia team.</li>
 	  
   </ul>
   
   
-  <h4 id="printlistpanel">print list  panel:</h4>
   
-  <p>You find the print  list panel by clicking the print list button located on the lower left side of the page. 
-  The print list panel is the panel where  you gather all the selected places. At the end you can print them by  
-  clicking the print icon. The single entries of the print list panel are editable. If you click on the + sign 
-  located under each  entry, a fly out menu will show up. Here you can erase information/  add notes, which are 
-  (not) needed on your personal print list. By  clicking the (–) sign the fly out menu will disapear again and your 
-  notes are saved.</p>
   	</div>
    </body>
   </html>
