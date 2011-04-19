@@ -57,6 +57,22 @@ foreach($files as $css) {
 }
 file_put_contents('lib/local/Layout/css.php', "<?php return array('/{$collectopia_file}');");
 
+// create default config file
+file_put_contents('config.inc.php',
+<<<EOF
+Registry::set('site.deploy_checks', '');
+Registry::set('search.index-directory', __DIR__ . '/private/search');
+Registry::set('photos.tmp-directory', __DIR__ . '/private/tmp');
+Registry::set('photos.directory', __DIR__ . '/data/photos');
+Registry::set('photos.tmp.max-life', 3600);
+Registry::set('markers.directory', __DIR__ . '/data/markers');
+Registry::set('markers.fonts.directory', __DIR__ . '/private/fonts');
+Registry::set('markers.max-per-pack', 100);
+Registry::set('markers.max-pack-radius', 45);
+EOF
+);
+
+
 // Setup permissions
 system("mkdir -p private/tmp private/search data/markers data/photos");
 system('chmod 0777 private/tmp private/search data/markers data/photos config.inc.php');
