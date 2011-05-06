@@ -42,6 +42,9 @@ class Layout_Default extends Layout
         
         $doc->add_favicon(surl('/static/images/favicon_32.png'));   
         
+        $doc->add_ref_css(surl('/static/css/ui-lightness/jquery-ui.css'));
+        $doc->add_ref_css(surl('/static/fileupload/jquery.fileupload-ui.css'));
+        $doc->add_ref_css(surl('/static/fancybox/jquery.fancybox-1.3.4.css'));
         foreach(include(__DIR__ . '/css.php') as $css)
         	$doc->add_ref_css(surl($css));
         

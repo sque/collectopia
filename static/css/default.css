@@ -209,11 +209,11 @@ div#content {
 	z-index: 1000;
 }
 
-.panel.disabled .title, .panel.disabled .close, .panel.disabled .actions {
+.panel.disabled span.title, .panel.disabled span.close, .panel.disabled .actions {
 	display: none;
 }
 
-.panel .close{
+.panel div > span.close{
 	position: absolute;
 	right: -6px;
 	top: -9px;
@@ -232,7 +232,7 @@ div#content {
 	z-index: 2;
 }
 
-.panel .close:hover {
+.panel div > span.close:hover {
 	border-color: #dd6666;
 	cursor: pointer;	
 }

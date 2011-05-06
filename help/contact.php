@@ -16,7 +16,7 @@
   <p>If you want to get in contact with collectopia or you have any questions, ideas, interest... 
   please use the following email:</p>
   
-  <a>contact _at collectopia _dot espiv _dot net</a>
+  <a>collectopia _at espiv _dot net</a>
 
 </div>
 
