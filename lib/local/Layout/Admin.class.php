@@ -34,6 +34,9 @@ class Layout_Admin extends Layout
         etag('div class="header"',
         	tag('ul class="menu"',
         		tag('li', tag('a', 'Control Panel')->attr('href', url('/admin'))),
+        		(Authn_Realm::has_identity())
+        			?tag('li', tag('a', 'Update my profile')->attr('href', url('/admin/user/' . Authn_Realm::get_identity()->get_record()->username . '/+update')))
+        			:'',
 		        tag('li', tag('a', 'Logout')->attr('href', url('/admin/+logout')))
         	)
         );

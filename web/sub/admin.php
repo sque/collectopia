@@ -29,6 +29,10 @@ Stupid::add_rule('admin_search_rebuild',
 	array('type' => 'url_path', 'chunk[2]' => '/^search$/', 'chunk[3]' => '/^\+rebuild$/')
 );
 
+Stupid::add_rule('admin_user_update',
+	array('type' => 'url_path', 'chunk[2]' => '/^user$/', 'chunk[3]' => '/^([a-zA-Z0-9]+)$/', 'chunk[4]' => '/^\+update$/')
+);
+
 Stupid::set_default_action('admin_show_default');
 Stupid::chain_reaction();
 
@@ -38,7 +42,6 @@ function admin_show_default() {
 	etag('em', 'No css, I know...');
 	
 	etag('a', tag('h2', 'Rebuild index'))->attr('href', url('/admin/search/+rebuild'));
-	SearchIndex::open()->updatePlace(Place::open(15));
 }
 
 function admin_search_rebuild() {
@@ -46,4 +49,12 @@ function admin_search_rebuild() {
 	etag('h3', 'Rebuilding index...');
 	$SI = SearchIndex::rebuild();
 	etag('h3', 'OK');
+}
+
+function admin_user_update($user) {
+	if (!($u = User::open($user)))
+		return;
+		
+	$frm = new UI_UpdateUserForm($u);
+	Output_HTMLTag::get_current_parent()->append($frm->render());
 }
