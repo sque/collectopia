@@ -1,0 +1,132 @@
+@CHARSET "UTF-8";
+
+html, body {
+	height: 100%;
+}
+
+body {
+	font: 9pt "Arial";
+	color: #454545;
+	
+	background: #fcfff4; /* Old browsers */
+	background: -moz-linear-gradient(top, #fcfff4 0%, #dfe5d7 80px, #b3bead 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcfff4), color-stop(80px,#dfe5d7), color-stop(100%,#b3bead)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #fcfff4 0%,#dfe5d7 80px,#b3bead 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #fcfff4 0%,#dfe5d7 80px,#b3bead 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #fcfff4 0%,#dfe5d7 80px,#b3bead 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#b3bead',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #fcfff4 0%,#dfe5d7 80px,#b3bead 100%); /* W3C */
+	background-repeat: repeat-x;*/
+	
+}
+
+.ui-form {	
+	border: 1px solid #dedede;	
+	background-color: white;
+	padding: 5px;
+	display: inline-block;
+	margin: 15px auto;
+}
+.ui-form.ui-login{
+	margin: 150px auto;
+	padding: 15px 30px;
+	font-size: 14pt;
+	width: 300px;
+	border-radius: 14px;
+	box-shadow: 0px 0px 10px #565655;
+	display: block;
+}
+.ui-form .title{
+	color: #655555;
+	display: block;
+	font-size: 1.0em;
+	text-align: left;	
+	vertical-align: bottom;
+	font-style: italic;
+	
+}
+
+.ui-form.ui-login .title{
+	height: 60px;	
+	line-height: 60px;
+	background: url('../images/logo.png') no-repeat right center;
+}
+
+.ui-form.ui-login input[type=text], .ui-form.ui-login input[type=password]{
+	font-size: 1.3em;
+	width: 100%;
+	border: 1px solid #a1a1a1;
+	background: #f2f2f2;
+	border-radius: 3px;
+	padding: 3px;
+	color: #565656;
+}
+
+.ui-form ul.fields {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+.ui-form ul.fields li{
+	margin-bottom: 10px;
+}
+
+.ui-form label {
+	font-size: 0.7em;
+	display: block;
+	text-align: right;
+	font-style: italic;
+	color: #565656;
+}
+
+.ui-form  .buttons {
+	display: block;
+	text-align: right;
+}
+
+.ui-form  .buttons input{
+	margin-left: 10px;
+}
+
+.ui-form .ui-form-error {
+	display: block;
+	color: red;
+}
+
+a{
+	text-decoration: none;
+	font-weight: bold;
+	color: #353535;
+}
+
+a em{
+	font-size: 1em;
+	font-weight: normal;
+	display: block;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.menu {
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+	border-bottom: 1px solid;
+	display: block;
+	background-color: #f1f1f1;
+}
+
+.menu li {
+	display: inline-block;
+	margin-right: 3px;
+}
+
+
+.menu li a{
+	display: block;
+	border-right: 1px solid black;
+	padding-right: 3px;
+}

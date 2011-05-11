@@ -27,10 +27,12 @@ class UI_LoginForm extends Output_HTML_Form
         $this->redirect_url = $redirect_url;
 
         parent::__construct(array(
-			'login-user' => array('display' => 'Username'),
-			'login-pass' => array('display' => 'Password', 'type' => 'password'),
+			'login-user' => array('display' => '', 
+				'htmlattribs' => array('placeholder' => 'username')),
+			'login-pass' => array('display' => '', 'type' => 'password',
+				'htmlattribs' => array('placeholder' => 'password')),
         ),
-        array('title' => Registry::get('site.title') . ' Login',
+        array('title' => 'Login',
             'css' => array('ui-form','ui-login'),
 		    'buttons' => array(
 		        'login' => array('display' =>'Login'),

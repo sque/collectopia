@@ -222,6 +222,24 @@ collectopia.api.Place.prototype.getData = function() {
 };
 
 /**
+ * Get all data of this place for posting them.
+ * @returns {Object}
+ */
+collectopia.api.Place.prototype.getPostData = function() {
+	data = this.getData();
+	for(var i in data) {
+		if (i == 'photos') {
+			delete data[i];
+			continue;
+		}
+		if (collectopia.isArray(data[i]))
+			data[i] = data[i].join(',');
+		
+	}	   
+	return jQuery.extend(true, {}, data);
+};
+
+/**
  * Get the options of this place
  * @returns {Object}
  */
@@ -291,7 +309,7 @@ collectopia.api.Place.prototype.reqCreate = function(on_success, on_error) {
 	jQuery.ajax({
 	  type: 'POST',
 	  url: collectopia.api.furl('/api/place/+new'),
-	  data: this.getData(),
+	  data: this.getPostData(),
 	  success: function(reply){
 		  place.options['skip_marker_cache'] = true;
 		  place._process_reply_place(reply, on_success, on_error);
@@ -349,7 +367,7 @@ collectopia.api.Place.prototype.reqUpdate = function(on_success, on_error) {
 	jQuery.ajax({
 	  type: 'POST',
 	  url: collectopia.api.furl('/api/place/@' + this.id + '/+edit'),
-	  data: this.getData(),
+	  data: this.getPostData(),
 	  success: function(reply){
 		  place.options['skip_marker_cache'] = true;
 		  place._process_reply_place(reply, on_success, on_error);		  
@@ -395,6 +413,7 @@ collectopia.api.Place.prototype.reqDelete = function(on_success, on_error) {
 	if (!collectopia.isDefined(this.id))
 		return false;
 	
+	var place = this;
 	jQuery.ajax({
 	  type: 'POST',
 	  url: collectopia.api.furl('/api/place/@' + escape(this.id) + '/+delete'),

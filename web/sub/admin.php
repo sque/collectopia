@@ -38,10 +38,8 @@ Stupid::chain_reaction();
 
 function admin_show_default() {
 	
-	etag('h1', 'Administrator interface');
-	etag('em', 'No css, I know...');
-	
-	etag('a', tag('h2', 'Rebuild index'))->attr('href', url('/admin/search/+rebuild'));
+	etag('a', 'Rebuild index', tag('em', 'This action will delete and recreate the ' .
+		'whole database index that is used for searching. It can take some time...'))->attr('href', url('/admin/search/+rebuild'));
 }
 
 function admin_search_rebuild() {

@@ -29,11 +29,16 @@ class SearchIndex
 		$this->engine->addDocument($splace);
 	}
 	
-	public function updatePlace(Place $place)
+	public function removePlace(Place $place)
 	{
 		$hits = $this->engine->find('id:' . $place->id);
 		foreach($hits as $hit)
 			$this->engine->delete($hit->id);
+	}
+	
+	public function updatePlace(Place $place)
+	{
+		$this->removePlace($place);
 		$this->addPlace($place);
 	}
 	

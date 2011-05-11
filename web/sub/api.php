@@ -36,6 +36,10 @@ Stupid::add_rule('place_new',
 Stupid::add_rule('place_id_edit',
     array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^@(\d+)$/', 'chunk[4]' => '/^\+edit$/')
 );
+Stupid::add_rule('place_id_delete',
+    array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^@(\d+)$/', 'chunk[4]' => '/^\+delete$/'),
+    array('type' => 'authn', 'not' => true, 'op' => 'isanon')
+);
 Stupid::add_rule('place_id_rate',
     array('type' => 'url_path', 'chunk[2]' => '/^place$/', 'chunk[3]' => '/^@(\d+)$/', 'chunk[4]' => '/^\+rate$/'),
     array('type' => 'url_params', 'op' => 'isnumeric', 'param' => 'rate') 
@@ -79,6 +83,16 @@ function place_id_rate($id) {
 	
 	header('Content-type: application/json');
 	echo json_encode($p->to_api());
+}
+
+function place_id_delete($id) {
+	if (!$p = Place::open(array('id' => $id)))
+		throw new Exception404('Unknown place.');
+	if ($_SERVER['REQUEST_METHOD'] != 'POST')
+		throw new Exception404('Unknown action.');
+	if (Net_HTTP_RequestParam::get('id') != $id)
+		throw new Exception404('Unknown place.');	// Id must be given as post parameter too.
+	$p->delete();
 }
 
 function place_all(){

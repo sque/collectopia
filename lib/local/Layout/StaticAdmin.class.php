@@ -20,7 +20,7 @@
  */
 
 
-class Layout_Admin extends Layout
+class Layout_StaticAdmin extends Layout
 {
     
     protected function __init_layout()
@@ -28,18 +28,19 @@ class Layout_Admin extends Layout
         $this->activate();
         $doc = $this->get_document();    
         
-        $doc->add_favicon(surl('/static/images/favicon_32.png'));   
+        $doc->add_favicon(surl('/static/images/favicon_32.png'));
+
+        $doc->add_ref_css(surl('/static/css/login.css'));   
         
         etag('div id="wrapper"')->push_parent();
-        etag('div class="header"',
-        	tag('ul class="menu"',
-        		tag('li', tag('a', 'Control Panel')->attr('href', url('/admin'))),
-        		(Authn_Realm::has_identity())
-        			?tag('li', tag('a', 'Update my profile')->attr('href', url('/admin/user/' . Authn_Realm::get_identity()->get_record()->username . '/+update')))
-        			:'',
-		        tag('li', tag('a', 'Logout')->attr('href', url('/admin/+logout')))
-        	)
-        );
+        $header = etag('div class="header"');
+        
+    	if (Authn_Realm::has_identity()) {
+        		$header->prepend(tag('ul class="menu"',
+        			tag('li', tag('a', 'Control Panel')->attr('href', url('/admin'))),
+        			tag('li', tag('a', 'Update my profile')->attr('href', url('/admin/user/' . Authn_Realm::get_identity()->get_record()->username . '/+update')))
+        		));
+        	}
         
         $def_content = etag('div id="content');
 		

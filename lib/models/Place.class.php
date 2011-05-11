@@ -247,6 +247,22 @@ Place::events()->connect('op.post.create', function($e) {
 	SearchIndex::open()->addPlace($p);
 });
 
+Place::events()->connect('op.pre.delete', function($e) {
+	$p = $e->arguments["record"];
+	
+	// Delete all photos
+	foreach($p->photos->all() as $photo)
+		$photo->delete();
+		
+	// Remove categories
+	PlacesCats::raw_query()->delete()
+		->where('place_id = ?')
+		->execute($p->id);
+		
+	// Remove from search index
+	SearchIndex::open()->removePlace($p);	
+});
+
 require_once(__DIR__ . '/Photo.class.php');
 require_once(__DIR__ . '/MarkerPack.class.php');
 require_once(__DIR__ . '/Category.class.php');

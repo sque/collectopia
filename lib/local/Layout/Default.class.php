@@ -54,6 +54,9 @@ class Layout_Default extends Layout
         foreach(include(__DIR__ . '/js.php') as $js)
         	$doc->add_ref_js(surl($js));
        
+        // In case of authenticated user include admin panel
+        
+        
     	// Extra css
     	$style = '';
     	foreach($categories = Category::open_all_to_array() as $cat)
@@ -74,10 +77,16 @@ class Layout_Default extends Layout
           		
         $this->set_default_container($def_content);
         
+        $admin_js = '';
+        if (Authn_Realm::has_identity())
+        	$admin_js = "$('body').append('<script type=\"text/javascript\" src=\""
+        		. surl('/static/js/collectopia/admin.js') . "\"><\/script>');"; 
         etag('script type="text/javascript" html_escape_off', "
+        
         $(document).ready(function() {
-        	collectopia.api.init('" . surl('/') . "');
+        	collectopia.api.init('" . surl('/') . "');\n
 			map = new collectopia.Map($('#content'), " . json_encode($categories) . ");
+			$admin_js
 		});
         ");
 

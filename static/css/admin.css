@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+
+.panel.info ul.actions li.delete a{
+	background: white url('images/admin_delete.png') no-repeat 5px center;
+	padding-left: 24px;	
+}
+
+.button.admin span{
+	width: 24px; height: 24px; display: block;
+	background: transparent url('images/admin.gif') no-repeat center 0px;
+}
+
+
+.panel.admin {
+	background-color: #DEdede;
+}
+.panel.admin.active {
+	background-color: #a1a1a1;
+}
+
+.panel.admin iframe {
+	width: 99%;
+	height: 300px;
+	border: none;
+	margin-top: 7px;
+}

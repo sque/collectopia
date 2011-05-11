@@ -11,57 +11,6 @@ collectopia.Map = function(dom, categories) {
 	this.show_filters = [];
 	this.dom = dom;
 	
-	/* Describe buttons functionality */
-	this.buttons = {
-		create : {
-			dom : null,
-			title : 'create',
-			click : function() {
-				var btn = $(this);
-				if (btn.hasClass('enabled'))
-					return;
-				btn.addClass('enabled');
-				
-				var add_panel = new collectopia.AddPlacePanel(pthis, pthis.google.geocoder);
-				add_panel.events.bind('closed', function() {
-					btn.stop(true, true).animate({left: -65}).removeClass('enabled');
-					pthis.drawPlaces();
-				}); 
-				return false;
-			},
-			category : 'general'
-		},
-		expose : {
-			dom : null,
-			title : 'Full view',
-			click : function() {
-				collectopia.panels.toggleExpose();
-				return false;
-			},
-			initialize : function(btn) {
-
-			},
-			category : 'map-control'
-		},
-		help : {
-			dom : null,
-			title : 'Help',
-			click : function() {
-				var btn = $(this);
-				if (btn.hasClass('enabled'))
-					return;
-				btn.addClass('enabled');
-				
-				var panel = new collectopia.HelpPanel();
-				panel.events.bind('closed', function() {
-					btn.stop(true, true).animate({left: -65}).removeClass('enabled');
-				}); 
-				return false;
-			},			
-			category : 'help'
-		}
-	};
-	
 	
 	/* Initialize google map */
 	var init_google_map = function() {
@@ -621,3 +570,11 @@ collectopia.api.Place.prototype.hideMarker = function() {
 		this._marker.setVisible(false);
 };
 
+
+/**
+ * Remove the marker of a place from the map
+ */
+collectopia.api.Place.prototype.removeMarker = function() {
+	if (collectopia.isDefined(this._marker))
+		this._marker.setMap(null);
+};

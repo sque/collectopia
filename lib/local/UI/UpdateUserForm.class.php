@@ -31,9 +31,9 @@ class UI_UpdateUserForm extends Output_HTML_Form
         	'password2' => array('display' => 'Password', 'type' => 'password'),
         ),
         array('title' => "Update user '{$user->username}'",
-            'css' => array('ui-form','ui-login'),
+            'css' => array('ui-form','ui-update-profile'),
 		    'buttons' => array(
-		        'login' => array('display' =>'Upadte')
+		        'login' => array('display' =>'Update')
                 )
             )
         );

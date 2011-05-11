@@ -23,6 +23,6 @@
 // Enable XHTML Mode
 Output_HTMLTag::$default_render_mode = 'xhtml';
 
-Layout::assign('admin', 'Layout_Admin');
+Layout::assign('admin', 'Layout_StaticAdmin');
 Layout::assign('default', 'Layout_Default');
 
