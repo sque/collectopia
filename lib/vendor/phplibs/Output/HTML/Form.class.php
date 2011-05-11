@@ -470,7 +470,8 @@ class Output_HTML_Form
 
         // Call user function for post processing
         if (method_exists($this, 'on_post'))
-            $this->on_post();
+        	$this->on_post();
+        
             
         // Call on_valid if form is valid
         if ($this->is_valid() && method_exists($this, 'on_valid'))

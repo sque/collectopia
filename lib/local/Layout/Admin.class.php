@@ -20,30 +20,29 @@
  */
 
 
-//! Object to register handlers on destruction of this object
-class OnDestruct
+class Layout_Admin extends Layout
 {
-    //! Handlers
-    private $handlers = array();
-
-    //! Implement on destruction
-    public function __destruct()
-    {
-		foreach($this->handlers as $handle)
-        	call_user_func($handle);
-
-    }
-
-    //! Register a new handler
-    public function register_handler($callable)
-    {
-        $this->handlers[] = $callable;
-    }
-
-    //! Unregister handler
-    public function unregister_handler($callable)
-    {
-        if (($key = array_search($callable, $this->handlers, true)) !== false)
-        unset($this->handlers[$key]);
+    
+    protected function __init_layout()
+    {   
+        $this->activate();
+        $doc = $this->get_document();    
+        
+        $doc->add_favicon(surl('/static/images/favicon_32.png'));   
+        
+        etag('div id="wrapper"')->push_parent();
+        etag('div class="header"',
+        	tag('ul class="menu"',
+        		tag('li', tag('a', 'Control Panel')->attr('href', url('/admin'))),
+		        tag('li', tag('a', 'Logout')->attr('href', url('/admin/+logout')))
+        	)
+        );
+        
+        $def_content = etag('div id="content');
+		
+        $this->set_default_container($def_content);
+        
+    
+        $this->deactivate();
     }
 }

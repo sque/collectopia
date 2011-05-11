@@ -19,16 +19,31 @@
  *  
  */
 
+Layout::open('admin')->activate();
 
-class User extends DB_Record
-{
-    static public $table = 'users';
+Stupid::add_rule(function(){Net_HTTP_Response::redirect(url($_SERVER['PATH_INFO'] . '/+login'));},
+    array('type' => 'authn', 'op' => 'isanon')
+);
 
-    static public $fields = array(
-        'username' => array('pk' => true),
-        'password',
-        'enabled'
-        );
+Stupid::add_rule('admin_search_rebuild',
+	array('type' => 'url_path', 'chunk[2]' => '/^search$/', 'chunk[3]' => '/^\+rebuild$/')
+);
+
+Stupid::set_default_action('admin_show_default');
+Stupid::chain_reaction();
+
+function admin_show_default() {
+	
+	etag('h1', 'Administrator interface');
+	etag('em', 'No css, I know...');
+	
+	etag('a', tag('h2', 'Rebuild index'))->attr('href', url('/admin/search/+rebuild'));
+	SearchIndex::open()->updatePlace(Place::open(15));
 }
 
-?>
+function admin_search_rebuild() {
+	
+	etag('h3', 'Rebuilding index...');
+	$SI = SearchIndex::rebuild();
+	etag('h3', 'OK');
+}

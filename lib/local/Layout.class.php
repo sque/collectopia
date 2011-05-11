@@ -41,7 +41,7 @@ class Layout
     final public function __construct($name)
     {
         // Check if there is already a layout with that name
-        if (self::open($name) !== null)
+        if (isset(self::$instances[$name]) && is_object(self::$instances[$name]))
             throw new RuntimeException("There is already a layout with name {$name}");
 
         // Register myself
@@ -95,6 +95,9 @@ class Layout
     }
 
     //! Get the activated layout
+    /**
+     * @return Layout
+     */
     static public function activated()
     {
         return self::$active;
@@ -111,7 +114,7 @@ class Layout
             Output_HTMLTag::pop_parent();
             ob_end_clean();
 
-            //$this->events()->notify('post-flush', array('layout' => $this));
+            $this->events()->notify('post-flush', array('layout' => $this));
 
             echo $this->document->render();
 
@@ -154,10 +157,22 @@ class Layout
     static public function open($name)
     {
         if (isset(self::$instances[$name]))
-            return self::$instances[$name];
+        {
+            $layout = self::$instances[$name];
+            if (is_object($layout))
+                return $layout;
+            return self::$instances[$name] = new $layout($name);
+        }
 
         return null;
     }
+    
+    //! Assigm a class on layout
+    static public function assign($name, $class)
+    {
+        if (isset(self::$instances[$name]))
+            return null;
+        
+        self::$instances[$name] = $class;
+    }
 }
-
-?>

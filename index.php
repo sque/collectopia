@@ -42,13 +42,13 @@ if (Registry::get('site.deploy_checks')) {
     }
 }
 // Special handling for special urls
-Stupid::add_rule(create_function('', 'require(\'web/login.php\');'),
+Stupid::add_rule(function(){ require('web/login.php'); },
     array('type' => 'url_path', 'chunk[-1]' => '/\+login/')
 );
-Stupid::add_rule(create_function('', 'require(\'web/login.php\');'),
+Stupid::add_rule(function(){require('web/login.php'); },
     array('type' => 'url_path', 'chunk[-1]' => '/\+logout/')
 );
-Stupid::add_rule(create_function('', 'require(\'web/home.php\');'),
+Stupid::add_rule(function(){require('web/home.php'); },
     array('type' => 'url_path', 'path' => '/^\/?$/')
 );
 
@@ -79,11 +79,11 @@ try {
 }catch (Exception $e){
 	header('HTTP/1.1 500 Internal Server Error');
 	echo '<h1>500 Internal Server Error</h1>';
-	echo tag('p', $e->getMessage());
+	/*echo tag('p', $e->getMessage());
 	ob_start();
 	var_dump(debug_backtrace());
 	$bt = ob_get_clean();
-	echo tag('pre', $bt);
+	echo tag('pre', $bt);*/
 	exit;
 }
 

@@ -106,10 +106,11 @@ function search(){
 	foreach($search_results as $r) {
     	$hits[] = array(
     		'type' => 'place',
-    		'id' => $r->id,
-    		'name' => $r->name,
-    		'country' => $r->country,
-    		'city' => $r->city
+    		'score' => $r->score,
+    		'id' => $r->getDocument()->id,
+    		'name' => $r->getDocument()->name,    		
+    		'country' => $r->getDocument()->country,
+    		'city' => $r->getDocument()->city
     	);
 	}
 	

@@ -237,8 +237,7 @@ Place::events()->connect('op.pre.save', function(Event $e) {
 		$r->slug = Place::generate_slug($r->name);
 	}
 	
-	// TODO: Update index
-	
+	SearchIndex::open()->updatePlace($r);
 });
 
 Place::events()->connect('op.post.create', function($e) {

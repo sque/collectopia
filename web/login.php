@@ -20,8 +20,8 @@
  */
 
 
-Layout::open('default')->activate();
-Layout::open('default')->get_document()->add_meta('noindex', array('name' => 'robots'));
+Layout::open('admin')->activate();
+Layout::open('admin')->get_document()->add_meta('noindex', array('name' => 'robots'));
 
 
 // Get the reference url to redirect back
@@ -38,8 +38,8 @@ function reference_url()
 
 
 // Logout user if there is someone logged on
-Stupid::add_rule(create_function('', 'Authn_Realm::clear_identity(); Net_HTTP_Response::redirect(reference_url());'),
-array('type' => 'url_path', 'chunk[-1]' => '/\+logout/'));
+Stupid::add_rule(function(){ Authn_Realm::clear_identity(); Net_HTTP_Response::redirect(reference_url()); },
+	array('type' => 'url_path', 'chunk[-1]' => '/\+logout/'));
 Stupid::chain_reaction();
 
 // Login form
@@ -49,6 +49,4 @@ if (! Authn_Realm::has_identity())
     etag('div', $form->render());
 }
 else
-Net_HTTP_Response::redirect(reference_url());
-
-?>
+	Net_HTTP_Response::redirect(reference_url());

@@ -561,8 +561,8 @@ ul.rating.selected li{
 
 .place-viewer h3.name {
 	margin: 2px 0px;
-	font-size: 1.3em;
-	color: #b77d22;
+	font-size: 1.0em;
+	color: black;
 }
 .place-viewer ul.info{
 	list-style-type: none;

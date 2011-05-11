@@ -59,5 +59,3 @@ class Authn_Session_Native implements Authn_Session
         $_SESSION[$this->session_index] = null;
     }
 }
-
-?>

@@ -131,8 +131,5 @@ function manage_exception($exception)
 // Hook error handler
 set_error_handler('manager_error');
 set_exception_handler('manage_exception');
-
 // Continue execution
 require_once 'index.php';
-
-?>

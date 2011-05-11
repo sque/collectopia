@@ -17,8 +17,9 @@ class SearchIndex
 	{
 		$splace = new Zend_Search_Lucene_Document();
  
-		$splace->addField(Zend_Search_Lucene_Field::UnIndexed('id', $place->id));
+		$splace->addField(Zend_Search_Lucene_Field::keyword('id', $place->id));
 		$splace->addField(Zend_Search_Lucene_Field::Text('name', $place->name), 'utf8');
+		$splace->addField(Zend_Search_Lucene_Field::Text('short_name', $place->short_name), 'utf8');
 		$splace->addField(Zend_Search_Lucene_Field::Text('country', $place->country, 'utf8'));
 		$splace->addField(Zend_Search_Lucene_Field::Text('city', $place->city, 'utf8'));
 		$splace->addField(Zend_Search_Lucene_Field::Text('address', $place->address, 'utf8'));
@@ -26,6 +27,14 @@ class SearchIndex
 		 
 		// Add document to the index
 		$this->engine->addDocument($splace);
+	}
+	
+	public function updatePlace(Place $place)
+	{
+		$hits = $this->engine->find('id:' . $place->id);
+		foreach($hits as $hit)
+			$this->engine->delete($hit->id);
+		$this->addPlace($place);
 	}
 	
 	// Open an existing index or create it.
@@ -37,6 +46,22 @@ class SearchIndex
 		} catch(Zend_Search_Lucene_Exception $e) {
 			return SearchIndex::create($index_dir);
 		}
+	}
+	
+	// Recreate index
+	public static function rebuild()
+	{
+		$index_dir = Registry::get('search.index-directory');
+		$d = dir($index_dir);
+		while (false !== ($entry = $d->read())) {
+			$full_path = $index_dir . '/' . $entry;
+			if (is_dir($full_path ))
+				continue;
+			
+	   		unlink($full_path);
+		}
+		$d->close();
+		self::create();
 	}
 	
 	// Create index	

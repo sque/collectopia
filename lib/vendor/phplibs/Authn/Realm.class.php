@@ -153,5 +153,3 @@ class Authn_Realm
 
 // Default session storage is set to native
 Authn_Realm::set_session(new Authn_Session_Native());
-
-?>

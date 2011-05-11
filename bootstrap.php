@@ -62,8 +62,8 @@ session_start();
 if (!isset($_SESSION['initialized']))
 {
     // Prevent session fixation with invalid ids
-    $_SESSION['initialized'] = true;
     session_regenerate_id();
+    $_SESSION['initialized'] = true;    
 }
 
 // Setup authentication
@@ -73,7 +73,7 @@ $auth = new Authn_Backend_DB(array(
         ->where('username = ?'),
     'field_username' => 'username',
     'field_password' => 'password',
-    'hash_function' => 'sha1'
+    'hash_function' => array('User', 'hash_function')
 ));
 Authn_Realm::set_backend($auth);
 
