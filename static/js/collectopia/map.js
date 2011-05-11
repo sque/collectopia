@@ -65,10 +65,10 @@ collectopia.Map = function(dom, categories) {
 
 		// Random button
 		new collectopia.Map.ButtonWidget(this.widget_areas['right'], 'random', 'Random Place', function(event){
-			var places = [];
+			var place_ids = [];
 			for(var i in map.places)
-				places.push(i);
-			var p = map.places[Math.floor((places.length-1) * Math.random())];
+				place_ids.push(i);
+			var p = map.places[place_ids[Math.floor((place_ids.length-1) * Math.random())]];
 			p.panTo(pthismap);
 			p.showInfo(pthismap);
 			 

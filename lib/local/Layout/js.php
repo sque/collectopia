@@ -1,6 +1,6 @@
 <?php 
 return array(
-        '/static/js/jquery-1.4.4.min.js',
+        '/static/js/jquery-1.6.min.js',
         '/static/js/jquery-ui-1.8.11.custom.min.js',
 		'/static/fileupload/jquery.fileupload.js',
 		'/static/fileupload/jquery.fileupload-ui.js',
