@@ -54,7 +54,7 @@ class PlaceEditForm extends JsonForm
         	'video' => array('display' => 'Video URL (YouTube)',
         		/*'hint' => 'Give a vimeo or youtube url with the video you want.'*/),
 			'description' => array('display' => 'Description', 'type' => 'textarea',
-        		'regcheck' => '/^.{10,}/', 'onerror' => 'Description must be at least 10 letters.'),
+        		'regcheck' => '/^.{10,}/s', 'onerror' => 'Description must be at least 10 letters.'),
         	'photos' => array('type' => 'hidden', 'value' => ''),
         	'loc_lat' => array('type' => 'hidden', 'regcheck' => '/^-?\d{1,3}\.?\d+$/',
         		'onerror' => 'This is not a valid location'),
