@@ -37,7 +37,8 @@ class Layout_StaticAdmin extends Layout
         
     	if (Authn_Realm::has_identity()) {
         		$header->prepend(tag('ul class="menu"',
-        			tag('li', tag('a', 'Control Panel')->attr('href', url('/admin'))),
+        			tag('li', tag('a', 'General')->attr('href', url('/admin'))),
+        			tag('li', tag('a', 'Tools')->attr('href', url('/admin/tools'))),
         			tag('li', tag('a', 'Update my profile')->attr('href', url('/admin/user/' . Authn_Realm::get_identity()->get_record()->username . '/+update')))
         		));
         	}

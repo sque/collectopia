@@ -29,6 +29,10 @@ Stupid::add_rule('admin_search_rebuild',
 	array('type' => 'url_path', 'chunk[2]' => '/^search$/', 'chunk[3]' => '/^\+rebuild$/')
 );
 
+Stupid::add_rule('admin_tools',
+	array('type' => 'url_path', 'chunk[2]' => '/^tools$/')
+);
+
 Stupid::add_rule('admin_user_update',
 	array('type' => 'url_path', 'chunk[2]' => '/^user$/', 'chunk[3]' => '/^([a-zA-Z0-9]+)$/', 'chunk[4]' => '/^\+update$/')
 );
@@ -38,8 +42,31 @@ Stupid::chain_reaction();
 
 function admin_show_default() {
 	
-	etag('a', 'Rebuild index', tag('em', 'This action will delete and recreate the ' .
-		'whole database index that is used for searching. It can take some time...'))->attr('href', url('/admin/search/+rebuild'));
+	$total_photos = Photo::raw_query()->select(array('COUNT(*)'))
+		->where('place_id IS NOT NULL')->execute();
+	$total_size = DB_Conn::query_fetch_all('SELECT SUM(size) FROM photos WHERE place_id IS NOT NULL');
+	$total_size = $total_size[0][0];
+	
+	$total_temp_photos = Photo::raw_query()->select(array('COUNT(*)'))
+		->where('place_id IS NULL')
+		->where('secret IS NOT NULL')->execute();
+	$total_temp_size = DB_Conn::query_fetch_all('SELECT SUM(size) FROM photos WHERE secret IS NOT NULL AND place_id IS NULL');
+	$total_temp_size = $total_temp_size[0][0]; 
+	
+	$total_del_photos = Photo::raw_query()->select(array('COUNT(*)'))
+		->where('place_id IS NULL')
+		->where('secret IS NULL')->execute();
+	$total_del_size = DB_Conn::query_fetch_all('SELECT SUM(size) FROM photos WHERE secret IS NULL AND place_id IS NULL');
+	$total_del_size = $total_del_size[0][0]; 
+	etag('h3' , 'Statistics');
+	etag('ul class="statistics',
+		tag('li', tag('strong', 'Total places: '), (string)Place::count()),
+		tag('li', tag('strong', 'Place photos: '), (string)$total_photos[0][0], tag('em', " - " . html_human_fsize($total_size))),
+		tag('li', tag('strong', 'Temporary photos: '),
+			(string)$total_temp_photos[0][0], tag('em', " - " . html_human_fsize($total_temp_size))),
+		tag('li', tag('strong', 'Photos of deleted places: '),
+			(string)$total_del_photos[0][0], tag('em', " - " . html_human_fsize($total_del_size)))
+	);
 }
 
 function admin_search_rebuild() {
@@ -47,6 +74,11 @@ function admin_search_rebuild() {
 	etag('h3', 'Rebuilding index...');
 	$SI = SearchIndex::rebuild();
 	etag('h3', 'OK');
+}
+
+function admin_tools() {
+	etag('a', 'Rebuild index', tag('em', 'This action will delete and recreate the ' .
+		'whole database index that is used for searching. It can take some time...'))->attr('href', url('/admin/search/+rebuild'));
 }
 
 function admin_user_update($user) {

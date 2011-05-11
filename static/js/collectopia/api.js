@@ -227,15 +227,11 @@ collectopia.api.Place.prototype.getData = function() {
  */
 collectopia.api.Place.prototype.getPostData = function() {
 	data = this.getData();
-	for(var i in data) {
-		if (i == 'photos') {
-			delete data[i];
-			continue;
-		}
+	for(var i in data) {		
 		if (collectopia.isArray(data[i]))
 			data[i] = data[i].join(',');
 		
-	}	   
+	}
 	return jQuery.extend(true, {}, data);
 };
 
