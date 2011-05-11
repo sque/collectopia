@@ -227,7 +227,13 @@ collectopia.api.Place.prototype.getData = function() {
  */
 collectopia.api.Place.prototype.getPostData = function() {
 	data = this.getData();
-	for(var i in data) {		
+	for(var i in data) {
+		if ((i == 'photos') && (collectopia.isArray(data[i]))){
+			var photos = [];
+			for(var j in data['photos'])
+				photos.push(data['photos'][j]['id']);
+			data['photos'] = photos.join(',');
+		}
 		if (collectopia.isArray(data[i]))
 			data[i] = data[i].join(',');
 		
