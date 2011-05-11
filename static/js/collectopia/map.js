@@ -202,7 +202,7 @@ collectopia.Map.prototype.drawPlaces = function() {
 		for(var i in this.places)
 			this.places[i].showMarker(this);
 	} else {
-		console.log('drawing using filters');
+		//console.log('drawing using filters');
 		var filtered = this.getFilteredPlaces();
 		for(var i in filtered['show'])
 			filtered['show'][i].showMarker(this);
